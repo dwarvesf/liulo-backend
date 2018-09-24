@@ -16,3 +16,4 @@ erl_crash.dump
 /config/*.secret.exs
 /cover
 .DS_Store
+.elixir_ls
