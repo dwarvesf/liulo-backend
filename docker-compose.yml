@@ -1,0 +1,32 @@
+version: '3.7'
+services:
+  db:
+    image: postgres:9.6.3
+    ports:
+      - "5433:5432"
+    env_file: ./.env
+
+  web:
+    build: .
+    image: phoenix_web
+    env_file: ./.env
+    environment:
+    - MIX_ENV=dev
+    ports:
+      - "4000:4000"
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+    command: mix phx.server
+
+  test:
+    env_file: ./.env
+    image: phoenix_web
+    environment:
+    - MIX_ENV=test
+    volumes:
+    - .:/app
+    depends_on:
+      - web
+    command: mix test
