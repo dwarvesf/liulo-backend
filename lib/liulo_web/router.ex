@@ -13,14 +13,10 @@ defmodule LiuloWeb.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/", LiuloWeb do
-    pipe_through :browser # Use the default browser stack
-
-    get "/", PageController, :index
-  end
-
   # Other scopes may use custom stacks.
-  # scope "/api", LiuloWeb do
-  #   pipe_through :api
-  # end
+  scope "/api/v1", LiuloWeb do
+    pipe_through :api
+
+    resources "/user", UserController, except: [:new, :edit]
+  end
 end

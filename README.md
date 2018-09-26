@@ -24,6 +24,11 @@ make run
 ```
 make test
 ```
+
+## How to run mix tasks
+```
+docker-compose run --rm web mix ...
+```
 ## License
 
 MIT &copy; [Dwarves Team](github.com/dwarvesf)
