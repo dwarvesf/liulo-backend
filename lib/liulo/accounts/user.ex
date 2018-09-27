@@ -6,17 +6,18 @@ defmodule Liulo.Accounts.User do
   schema "user" do
     field :email, :string
     field :full_name, :string
-    field :gender, :integer
+    field :gender, GenderEnum
     field :password, :string
-    field :status, :integer
-
+    field :status, UserStatusEnum, default: :active
     timestamps()
   end
 
+  @required_fields ~w(email full_name)a
+  @optional_fields ~w(gender password status)a
   @doc false
   def changeset(user, attrs) do
     user
-    |> cast(attrs, [:full_name, :email, :password, :gender, :status])
-    |> validate_required([:full_name, :email, :password, :gender, :status])
+    |> cast(attrs, @required_fields ++ @optional_fields)
+    |> validate_required(@required_fields)
   end
 end

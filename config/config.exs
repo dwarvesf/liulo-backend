@@ -19,8 +19,12 @@ config :liulo, LiuloWeb.Endpoint,
 
 # Configures Elixir's Logger
 config :logger, :console,
-  format: "$time $metadata[$level] $message\n",
+format: "$time $metadata[$level] $message\n",
   metadata: [:user_id]
+
+config :liulo, Liulo.AuthAccessPipeline,
+  module: Liulo.Guardian,
+  error_handler: Liulo.AuthErrorHandler
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

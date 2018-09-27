@@ -3,6 +3,9 @@ DCR=$(DC) run --rm
 
 .PHONY: setup compile test run rund swagger
 
+get:
+	$(DCR) web mix do deps.get
+
 compile:
 	$(DCR) web mix do deps.get, ecto.setup
 

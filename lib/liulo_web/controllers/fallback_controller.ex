@@ -17,4 +17,10 @@ defmodule LiuloWeb.FallbackController do
     |> put_status(:not_found)
     |> render(LiuloWeb.ErrorView, :"404")
   end
+
+  def call(conn, {:error, opts}) do
+    conn
+    |> put_status(:unprocessable_entity)
+    |> render(LiuloWeb.ErrorView, "error.json", opts)
+  end
 end
