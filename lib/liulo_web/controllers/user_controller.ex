@@ -39,4 +39,10 @@ defmodule LiuloWeb.UserController do
       send_resp(conn, :no_content, "")
     end
   end
+
+  def me(conn, _) do
+    # token = Liulo.Guardian.Plug.current_token(conn)
+    # claims = Liulo.Guardian.Plug.current_claims(conn) |> IO.inspect()
+    # resource = Liulo.Guardian.Plug.current_resource(conn) |> IO.inspect()
+  end
 end

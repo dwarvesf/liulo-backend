@@ -14,7 +14,6 @@ defmodule LiuloWeb.UserView do
     %{id: user.id,
       full_name: user.full_name,
       email: user.email,
-      password: user.password,
       gender: user.gender,
       status: user.status}
   end
