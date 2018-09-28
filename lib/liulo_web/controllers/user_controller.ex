@@ -41,8 +41,11 @@ defmodule LiuloWeb.UserController do
   end
 
   def me(conn, _) do
-    # token = Liulo.Guardian.Plug.current_token(conn)
+    # IO.inspect "-----------token"
+    # token = Liulo.Guardian.Plug.current_token(conn) |> IO.inspect()
+    # IO.inspect "-----------claim"
     # claims = Liulo.Guardian.Plug.current_claims(conn) |> IO.inspect()
+    # IO.inspect "-----------resource"
     # resource = Liulo.Guardian.Plug.current_resource(conn) |> IO.inspect()
   end
 end

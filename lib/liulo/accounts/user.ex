@@ -9,6 +9,8 @@ defmodule Liulo.Accounts.User do
     field :gender, GenderEnum
     field :password, :string
     field :status, UserStatusEnum, default: :active
+
+    has_many(:events, Liulo.Events.Event, foreign_key: :owner_id)
     timestamps()
   end
 
