@@ -1,6 +1,8 @@
 # liulo
 > My Elixir Phoenix Project
 
+![https://travis-ci.org/dwarvesf/liulo-backend/builds/435549922#
+
 ## Setup your project before run
 Update content in `config/dev.exs` and `config/test.exs`
 
