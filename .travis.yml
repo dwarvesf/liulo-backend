@@ -1,0 +1,14 @@
+language: elixir
+elixir: '1.7'
+sudo: required
+
+services:
+  - docker
+
+install:
+  - make get
+  - make compile
+
+script:
+  - make credo
+  - make test
