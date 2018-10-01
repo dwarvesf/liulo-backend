@@ -43,7 +43,8 @@ defmodule Liulo.Mixfile do
       {:cowboy, "~> 1.0"},
       {:oauth2, "~> 0.9"},
       {:ecto_enum, "~> 1.0"},
-      {:guardian, "~> 1.0"}
+      {:guardian, "~> 1.0"},
+      {:credo, "~> 0.10.0", only: [:dev, :test], runtime: false}
     ]
   end
 
