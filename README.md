@@ -40,4 +40,4 @@ docker-compose run --rm web mix ...
 
 ## License
 
-MIT &copy; [Dwarves Team](github.com/dwarvesf)
+MIT &copy; [Dwarves Team](https://dwarves.foundation/ "Dwarves Homepage")
