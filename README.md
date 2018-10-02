@@ -29,6 +29,15 @@ make test
 ```
 docker-compose run --rm web mix ...
 ```
+
+## About this app
+- Our app description https://github.com/dwarvesf/liulo
+- Our database diagram [here](document/Database.md "Liulo Database Diagram")
+
+## How to contribute to our project
+1. Please follow git-flow guideline https://github.com/dwarvesf/team/blob/master/gitlab.md
+2. Assign your self in unassign issues
+
 ## License
 
 MIT &copy; [Dwarves Team](github.com/dwarvesf)
