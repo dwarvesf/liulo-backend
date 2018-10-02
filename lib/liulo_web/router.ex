@@ -29,7 +29,11 @@ defmodule LiuloWeb.Router do
 
     get "/me", UserController, :me
 
-    resources "/event", EventController, except: [:new, :edit]
+    resources "/event", EventController, except: [:new, :edit] do
+      get "/topic", TopicController, :topic_by_event
+    end
+
+    resources "/topic", TopicController, except: [:new, :edit]
   end
 
 end

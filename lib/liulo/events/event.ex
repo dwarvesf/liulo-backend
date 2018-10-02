@@ -13,6 +13,9 @@ defmodule Liulo.Events.Event do
     # field :owner_id, :integer
 
     belongs_to(:owner, Liulo.Accounts.User)
+
+    has_many(:topics, Liulo.Events.Topic, foreign_key: :event_id)
+
     timestamps()
   end
   @required_fields ~w(code name)a
