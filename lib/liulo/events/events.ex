@@ -50,9 +50,11 @@ defmodule Liulo.Events do
 
   """
   def create_event(owner, attrs \\ %{}) do
+    attrs =
+      attrs
+      |> Map.put("code", genarate_code())
     %Event{}
     |> Event.changeset(attrs)
-    |> Ecto.Changeset.change(code: genarate_code())
     |> Ecto.Changeset.put_assoc(:owner, owner)
     |> Repo.insert()
   end

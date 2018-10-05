@@ -8,11 +8,6 @@ defmodule LiuloWeb.TopicController do
 
   action_fallback LiuloWeb.FallbackController
 
-  def index(conn, _params) do
-    topic = Events.list_topic()
-    render(conn, "index.json", topic: topic)
-  end
-
   def create(conn, %{"id" => id, "topic" => topic_params}) do
     with %Event{} = event <-  Liulo.Repo.get_by!(Event, id: id),
     %User{} = owner <-  Liulo.Guardian.Plug.current_resource(conn),

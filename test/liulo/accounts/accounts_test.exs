@@ -11,7 +11,7 @@ defmodule Liulo.AccountsTest do
     @update_attrs params_for(:update_user)
     @invalid_attrs params_for(:invalid_user)
 
-    def user_fixture(attrs \\ %{}) do
+    def user_fixture() do
       insert(:user)
     end
 
@@ -27,11 +27,11 @@ defmodule Liulo.AccountsTest do
 
     test "create_user/1 with valid data creates a user" do
       assert {:ok, %User{} = user} = Accounts.create_user(@valid_attrs)
-      assert user.email == "test_update@dwarvesv.com"
-      assert user.full_name == "test full name update"
-      assert user.gender == :male
-      assert user.password == "passwordupdate"
-      assert user.status == :inactive
+      assert user.email == "test@dwarvesv.com"
+      assert user.full_name == "test full name"
+      assert user.gender == :female
+      assert user.password == "password"
+      assert user.status == :active
     end
 
     test "create_user/1 with invalid data returns error changeset" do

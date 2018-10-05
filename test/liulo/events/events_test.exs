@@ -8,7 +8,7 @@ defmodule Liulo.EventsTest do
   describe "event" do
     alias Liulo.Events.Event
 
-    @valid_attrs params_for(:event)
+    @valid_attrs params_for(:event) |> Liulo.TestHelper.stringify_keys
     @update_attrs %{code: "some updated code", description: "some updated description", ended_at: ~N[2011-05-18 15:01:01.000000], name: "some updated name", started_at: ~N[2011-05-18 15:01:01.000000], status: 43}
     @invalid_attrs %{code: nil, description: nil, ended_at: nil, name: nil, started_at: nil, status: nil}
 
@@ -29,7 +29,7 @@ defmodule Liulo.EventsTest do
 
     test "create_event/2 with valid data creates a event" do
       owner = insert(:user)
-      assert {:ok, %Event{} = event} = Events.create_event(owner, params_for(:event))
+      assert {:ok, %Event{} = event} = Events.create_event(owner, @valid_attrs)
       assert event.description == "Event test description"
       assert event.ended_at == ~N[2010-04-17 14:00:00.000000]
       assert event.name == "Event test"

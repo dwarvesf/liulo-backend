@@ -2,7 +2,6 @@ defmodule LiuloWeb.TopicControllerTest do
   use LiuloWeb.ConnCase
   alias Liulo.Guardian
 
-  alias Liulo.Events
   alias Liulo.Events.Topic
   import Liulo.Factory
 
@@ -29,7 +28,7 @@ defmodule LiuloWeb.TopicControllerTest do
 
     test "lists all topic by event", %{conn: conn} do
       event = insert(:event)
-      topic = insert_list(3, :topic, event: event)
+      insert_list(3, :topic, event: event)
       conn = get conn, event_topic_path(conn,:topic_by_event, event)
        data = json_response(conn, 200)["data"]
        assert Enum.count data
