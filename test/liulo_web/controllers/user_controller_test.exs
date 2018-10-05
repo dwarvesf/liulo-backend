@@ -1,21 +1,21 @@
 defmodule LiuloWeb.UserControllerTest do
-  use LiuloWeb.ConnCase
-  alias Liulo.Guardian
-  alias Liulo.Accounts
-  alias Liulo.Accounts.User
-  import Liulo.Factory
+  # use LiuloWeb.ConnCase
+  # alias Liulo.Guardian
+  # alias Liulo.Accounts
+  # alias Liulo.Accounts.User
+  # import Liulo.Factory
 
-  @create_attrs params_for(:user)
-  @update_attrs params_for(:update_user)
-  @invalid_attrs params_for(:invalid_user)
+  # @create_attrs params_for(:user)
+  # @update_attrs params_for(:update_user)
+  # @invalid_attrs params_for(:invalid_user)
 
-  def fixture(:user) do
-    insert(:user)
-  end
+  # def fixture(:user) do
+  #   insert(:user)
+  # end
 
-  setup %{conn: conn} do
-    {:ok, conn: put_req_header(conn, "accept", "application/json")}
-  end
+  # setup %{conn: conn} do
+  #   {:ok, conn: put_req_header(conn, "accept", "application/json")}
+  # end
 
 
   # describe "create user" do

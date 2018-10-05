@@ -1,6 +1,5 @@
 defmodule LiuloWeb.AuthView do
   use LiuloWeb, :view
-  alias LiuloWeb.AuthView
   alias LiuloWeb.UserView
 
 

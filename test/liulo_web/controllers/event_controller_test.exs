@@ -1,7 +1,6 @@
 defmodule LiuloWeb.EventControllerTest do
   use LiuloWeb.ConnCase, async: true
 
-  alias Liulo.Events
   alias Liulo.Events.Event
   alias Liulo.Guardian
   import Liulo.Factory
@@ -52,12 +51,8 @@ defmodule LiuloWeb.EventControllerTest do
     setup [:create_event]
 
     test "renders event when data is valid", %{conn: conn, event: %Event{id: id} = event} do
-      IO.inspect "-----------------------"
-      IO.inspect event
       put_conn = put conn, event_path(conn, :update, event), event: @update_attrs
       assert %{"id" => ^id} = json_response(put_conn, 200)["data"]
-      IO.inspect "-----------------------"
-      IO.inspect id
       get_conn = get conn, event_path(conn, :show, event.code)
       assert json_response(get_conn, 200)["data"]
     end

@@ -118,16 +118,6 @@ defmodule Liulo.Events do
   alias Liulo.Events.Topic
 
   @doc """
-  Returns the list of topic.
-
-  ## Examples
-
-      iex> list_topic()
-      [%Topic{}, ...]
-
-  """
-
-  @doc """
   Gets a single topic.
 
   Raises `Ecto.NoResultsError` if the Topic does not exist.
