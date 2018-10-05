@@ -26,4 +26,9 @@ defmodule Liulo.Events.Event do
     |> cast(attrs, @required_fields ++ @optional_fields)
     |> validate_required(@required_fields)
   end
+  # def update_changeset(event, attrs) do
+  #   event
+  #   |> cast(attrs, )
+
+  # end
 end

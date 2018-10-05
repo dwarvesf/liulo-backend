@@ -14,7 +14,6 @@ defmodule LiuloWeb.TopicController do
   end
 
   def create(conn, %{"id" => id, "topic" => topic_params}) do
-    IO.inspect "--------------------------"
     with %Event{} = event <-  Liulo.Repo.get_by!(Event, id: id),
     %User{} = owner <-  Liulo.Guardian.Plug.current_resource(conn),
     {:ok, %Topic{} = topic} <- Events.create_topic(event, owner, topic_params) do
@@ -27,7 +26,6 @@ defmodule LiuloWeb.TopicController do
   end
 
   def topic_by_event(conn, %{"event_id" => id}) do
-    IO.inspect "--------------------------"
     with %Event{} = event <-  Liulo.Repo.get_by!(Event, id: id),
       topics = Events.list_topic_by_event(event)  do
         conn

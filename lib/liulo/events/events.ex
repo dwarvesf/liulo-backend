@@ -16,9 +16,7 @@ defmodule Liulo.Events do
       [%Event{}, ...]
 
   """
-  def list_event do
-    Repo.all(Event)
-  end
+
   def list_event_by_user(%User{} = user) do
     user = user |> Repo.preload(:events)
     user.events
@@ -52,9 +50,9 @@ defmodule Liulo.Events do
 
   """
   def create_event(owner, attrs \\ %{}) do
-    attrs = attrs |> Map.put("code", genarate_code())
     %Event{}
     |> Event.changeset(attrs)
+    |> Ecto.Changeset.change(code: genarate_code())
     |> Ecto.Changeset.put_assoc(:owner, owner)
     |> Repo.insert()
   end
@@ -126,9 +124,6 @@ defmodule Liulo.Events do
       [%Topic{}, ...]
 
   """
-  def list_topic do
-    Repo.all(Topic)
-  end
 
   @doc """
   Gets a single topic.

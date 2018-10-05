@@ -19,3 +19,7 @@ config :liulo, Liulo.Repo,
   database: "liulo_test",
   pool: Ecto.Adapters.SQL.Sandbox,
   pool_size: 10
+
+config :liulo, Liulo.Guardian,
+issuer: "liulo",
+secret_key: "QvFQ5rk+wwLUhzdIFvvt8Bap+WsACHtnn2W1yUcx0LIcznf00evBn4MIQWS3JLVm"

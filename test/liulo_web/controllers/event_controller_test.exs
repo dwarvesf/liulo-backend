@@ -1,20 +1,28 @@
 defmodule LiuloWeb.EventControllerTest do
-  use LiuloWeb.ConnCase
+  use LiuloWeb.ConnCase, async: true
 
   alias Liulo.Events
   alias Liulo.Events.Event
+  alias Liulo.Guardian
+  import Liulo.Factory
 
-  @create_attrs %{code: "some code", description: "some description", ended_at: ~N[2010-04-17 14:00:00.000000], name: "some name", started_at: ~N[2010-04-17 14:00:00.000000], status: 42}
-  @update_attrs %{code: "some updated code", description: "some updated description", ended_at: ~N[2011-05-18 15:01:01.000000], name: "some updated name", started_at: ~N[2011-05-18 15:01:01.000000], status: 43}
-  @invalid_attrs %{code: nil, description: nil, ended_at: nil, name: nil, started_at: nil, status: nil}
+  @create_attrs params_for(:event)
+  @update_attrs params_for(:update_event)
+  @invalid_attrs params_for(:invalid_event)
 
   def fixture(:event) do
-    {:ok, event} = Events.create_event(@create_attrs)
-    event
+    insert(:event)
   end
 
   setup %{conn: conn} do
-    {:ok, conn: put_req_header(conn, "accept", "application/json")}
+    user = insert(:user)
+    {:ok, jwt, _claims} = Guardian.encode_and_sign(user)
+    conn =
+      conn
+      |> put_req_header("accept", "application/json")
+      |> put_req_header("authorization", "Bearer #{jwt}")
+
+    {:ok, conn: conn}
   end
 
   describe "index" do
@@ -26,18 +34,12 @@ defmodule LiuloWeb.EventControllerTest do
 
   describe "create event" do
     test "renders event when data is valid", %{conn: conn} do
-      conn = post conn, event_path(conn, :create), event: @create_attrs
-      assert %{"id" => id} = json_response(conn, 201)["data"]
 
-      conn = get conn, event_path(conn, :show, id)
-      assert json_response(conn, 200)["data"] == %{
-        "id" => id,
-        "code" => "some code",
-        "description" => "some description",
-        "ended_at" => ~N[2010-04-17 14:00:00.000000],
-        "name" => "some name",
-        "started_at" => ~N[2010-04-17 14:00:00.000000],
-        "status" => 42}
+      post_conn = post conn, event_path(conn, :create), event: @create_attrs
+      assert %{"code" => id} = json_response(post_conn, 201)["data"]
+
+      get_conn = get conn, event_path(conn, :show, id)
+      assert json_response(get_conn, 200)["data"]
     end
 
     test "renders errors when data is invalid", %{conn: conn} do
@@ -50,20 +52,15 @@ defmodule LiuloWeb.EventControllerTest do
     setup [:create_event]
 
     test "renders event when data is valid", %{conn: conn, event: %Event{id: id} = event} do
-      conn = put conn, event_path(conn, :update, event), event: @update_attrs
-      assert %{"id" => ^id} = json_response(conn, 200)["data"]
-
-      conn = get conn, event_path(conn, :show, id)
-      assert json_response(conn, 200)["data"] == %{
-        "id" => id,
-        "code" => "some updated code",
-        "description" => "some updated description",
-        "ended_at" => ~N[2011-05-18 15:01:01.000000],
-        "name" => "some updated name",
-        "started_at" => ~N[2011-05-18 15:01:01.000000],
-        "status" => 43}
+      IO.inspect "-----------------------"
+      IO.inspect event
+      put_conn = put conn, event_path(conn, :update, event), event: @update_attrs
+      assert %{"id" => ^id} = json_response(put_conn, 200)["data"]
+      IO.inspect "-----------------------"
+      IO.inspect id
+      get_conn = get conn, event_path(conn, :show, event.code)
+      assert json_response(get_conn, 200)["data"]
     end
-
     test "renders errors when data is invalid", %{conn: conn, event: event} do
       conn = put conn, event_path(conn, :update, event), event: @invalid_attrs
       assert json_response(conn, 422)["errors"] != %{}
@@ -74,8 +71,8 @@ defmodule LiuloWeb.EventControllerTest do
     setup [:create_event]
 
     test "deletes chosen event", %{conn: conn, event: event} do
-      conn = delete conn, event_path(conn, :delete, event)
-      assert response(conn, 204)
+      delete_conn = delete conn, event_path(conn, :delete, event)
+      assert response(delete_conn, 204)
       assert_error_sent 404, fn ->
         get conn, event_path(conn, :show, event)
       end
