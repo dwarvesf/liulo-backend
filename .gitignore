@@ -17,3 +17,4 @@ erl_crash.dump
 /cover
 .DS_Store
 .elixir_ls
+.env

@@ -24,5 +24,5 @@ rund: compile remove
 credo:
 	$(DCR) web mix credo --strict
 
-test:
+test: get compile
 	$(DCR) test

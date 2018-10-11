@@ -32,3 +32,14 @@ services:
     depends_on:
       - web
     command: mix test
+
+  prod:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    env_file: ./.env
+    image: phoenix_web_prod
+    environment:
+    - MIX_ENV=prod
+    - PORT=80
+    - HOST=localhost

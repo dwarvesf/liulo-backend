@@ -45,6 +45,7 @@ defmodule Liulo.Mixfile do
       {:ecto_enum, "~> 1.0"},
       {:guardian, "~> 1.0"},
       {:ex_machina, "~> 2.2", only: :test},
+      {:distillery, "~> 2.0"}
     ]
   end
 
