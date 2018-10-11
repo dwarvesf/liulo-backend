@@ -15,6 +15,7 @@ defmodule LiuloWeb.Router do
 
   pipeline :api_auth do
     plug(Liulo.AuthAccessPipeline)
+
   end
 
   # Other scopes may use custom stacks.
@@ -22,6 +23,11 @@ defmodule LiuloWeb.Router do
     pipe_through :api
 
     post "/login_google", AuthController, :callback
+    resources "/topic", TopicController, only: [:show] do
+      get "/question", QuestionController, :question_by_topic
+    end
+    resources "/question", QuestionController, except: [:index]do
+    end
   end
 
   scope "/api/v1", LiuloWeb do
@@ -33,7 +39,12 @@ defmodule LiuloWeb.Router do
       get "/topic", TopicController, :topic_by_event
     end
 
-    resources "/topic", TopicController, except: [:new, :edit]
+    resources "/topic", TopicController, except: [:new, :edit] do
+      get "/question/login", QuestionController, :question_by_topic
+    end
+    resources "/question/login", QuestionController do
+    end
+    resources "/question_vote", QuestionVoteController, except: [:new, :edit,:index, :show, :update]
   end
 
 end
