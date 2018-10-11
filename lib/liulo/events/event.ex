@@ -14,7 +14,7 @@ defmodule Liulo.Events.Event do
 
     belongs_to(:owner, Liulo.Accounts.User)
 
-    has_many(:topics, Liulo.Events.Topic, foreign_key: :event_id)
+    # has_many(:topics, Liulo.Events.Topic, foreign_key: :event_id)
 
     timestamps()
   end
