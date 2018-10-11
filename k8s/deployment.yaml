@@ -1,0 +1,54 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  creationTimestamp: 2018-10-12T10:10:35Z
+  labels:
+    app: liulo
+  name: liulo
+spec:
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations:
+        updatedTimestamp: {{UPDATED_TS}}
+      labels:
+        app: liulo
+    spec:
+      containers:
+      - name: liulo
+        image: hub.dwarvesf.com/liulo/backend:latest
+        env:
+        - name: PORT
+          valueFrom:
+            secretKeyRef:
+              name: liulo
+              key: port
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: liulo
+              key: postgres_user
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: liulo
+              key: postgres_password
+        - name: POSTGRES_DATABASE
+          valueFrom:
+            secretKeyRef:
+              name: liulo
+              key: postgres_database
+        - name: POSTGRES_HOST
+          valueFrom:
+            secretKeyRef:
+              name: liulo
+              key: postgres_host
+        imagePullPolicy: Always
+      restartPolicy: Always
+      imagePullSecrets:
+      - name: dwarvesf

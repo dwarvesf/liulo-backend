@@ -2,36 +2,51 @@ language: elixir
 elixir: '1.7'
 sudo: required
 
+cache:
+  directories:
+  # We cache the SDK so we don't have to download it again on subsequent builds.
+  - $HOME/google-cloud-sdk
+
 services:
   - docker
 
 env:
   global:
-    - POSTGRES_PORT=5439
+  # Do not prompt for user input when using any SDK methods.
+  - CLOUDSDK_CORE_DISABLE_PROMPTS=1 
 
 before_install:
-  - docker run -d --name pg_test -p 5439:5432 --env POSTGRES_PASSWORD=postgres --env POSTGRES_DB=liulo_test --env POSTGRES_USER=postgres postgres:9.6 
+  - | 
+    sudo rm /usr/local/bin/docker-compose; \
+    curl -L https://github.com/docker/compose/releases/download/1.22.0/docker-compose-`uname -s`-`uname -m` > docker-compose; \
+    chmod +x docker-compose; \
+    sudo mv docker-compose /usr/local/bin
   - |
-    while ! docker exec pg_test pg_isready -h localhost -p 5432 > /dev/null; do\
-      sleep 1; \
-    done
-  - sudo rm /usr/local/bin/docker-compose
-  - curl -L https://github.com/docker/compose/releases/download/1.22.0/docker-compose-`uname -s`-`uname -m` > docker-compose
-  - chmod +x docker-compose
-  - sudo mv docker-compose /usr/local/bin
-  
-install:
-  - make get
-  - make compile
+    if [ ! -d $HOME/google-cloud-sdk/bin ]; then \
+      # The install script errors if this directory already exists,
+      # but Travis already creates it when we mark it as cached.
+      rm -rf $HOME/google-cloud-sdk; \
+      # The install script is overly verbose, which sometimes causes
+      # problems on Travis, so ignore stdout.
+      curl https://sdk.cloud.google.com | bash > /dev/null; \
+    fi
+  # This line is critical. We setup the SDK to take precedence in our
+  # environment over the old SDK that is already on the machine.
+  - source $HOME/google-cloud-sdk/path.bash.inc
+  - gcloud components update kubectl
+  - gcloud version
+  - echo $GCLOUD_JSON_ACCOUNT | base64 --decode > service-account.json
+  - gcloud auth activate-service-account --key-file service-account.json
+  - gcloud container clusters get-credentials $CLUSTER_ID --zone $CLUSTER_ZONE --project $GOOGLE_PROJECT_ID
 
-stages:
-  - compile
-  - test
-  - deploy
 jobs:
   include:
-    - stage: test
-      env:
-        - MIX_ENV=test
-      script: make test
-      if: branch =~ /^feature(\/.*$|)/
+    # - stage: test
+    #   script: make test
+    #   if: branch =~ /^feature(\/.*$|)/ OR branch =~ /^hotfix(\/.*$|)/
+    - stage: ship-prod
+      script: make ship-prod
+      if: branch = feature/cicd OR branch = develop
+    - stage: deploy
+      script: make deploy
+      if: branch = feature/cicd OR branch = develop
