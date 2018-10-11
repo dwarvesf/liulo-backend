@@ -1,0 +1,37 @@
+language: elixir
+elixir: '1.7'
+sudo: required
+
+services:
+  - docker
+
+env:
+  global:
+    - POSTGRES_PORT=5439
+
+before_install:
+  - docker run -d --name pg_test -p 5439:5432 --env POSTGRES_PASSWORD=postgres --env POSTGRES_DB=liulo_test --env POSTGRES_USER=postgres postgres:9.6 
+  - |
+    while ! docker exec pg_test pg_isready -h localhost -p 5432 > /dev/null; do\
+      sleep 1; \
+    done
+  - sudo rm /usr/local/bin/docker-compose
+  - curl -L https://github.com/docker/compose/releases/download/1.22.0/docker-compose-`uname -s`-`uname -m` > docker-compose
+  - chmod +x docker-compose
+  - sudo mv docker-compose /usr/local/bin
+  
+install:
+  - make get
+  - make compile
+
+stages:
+  - compile
+  - test
+  - deploy
+jobs:
+  include:
+    - stage: test
+      env:
+        - MIX_ENV=test
+      script: make test
+      if: branch =~ /^feature(\/.*$|)/
