@@ -43,7 +43,8 @@ defmodule Liulo.Mixfile do
       {:cowboy, "~> 1.0"},
       {:oauth2, "~> 0.9"},
       {:ecto_enum, "~> 1.0"},
-      {:guardian, "~> 1.0"}
+      {:guardian, "~> 1.0"},
+      {:ex_machina, "~> 2.2", only: :test},
     ]
   end
 
@@ -57,7 +58,7 @@ defmodule Liulo.Mixfile do
     [
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
-      "test": ["ecto.create --quiet", "ecto.migrate", "test"]
+      test: ["ecto.create --quiet", "ecto.migrate", "test"]
     ]
   end
 end

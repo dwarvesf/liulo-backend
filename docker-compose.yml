@@ -19,6 +19,8 @@ services:
     depends_on:
       - db
     command: mix phx.server
+    volumes:
+      - .:/app
 
   test:
     env_file: ./.env

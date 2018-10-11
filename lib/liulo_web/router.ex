@@ -28,7 +28,12 @@ defmodule LiuloWeb.Router do
     pipe_through [:api, :api_auth]
 
     get "/me", UserController, :me
-  end
 
+    resources "/event", EventController, except: [:new, :edit] do
+      get "/topic", TopicController, :topic_by_event
+    end
+
+    resources "/topic", TopicController, except: [:new, :edit]
+  end
 
 end

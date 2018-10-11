@@ -2,21 +2,17 @@ defmodule Liulo.AccountsTest do
   use Liulo.DataCase
 
   alias Liulo.Accounts
+  import Liulo.Factory
 
   describe "user" do
     alias Liulo.Accounts.User
 
-    @valid_attrs %{email: "some email", full_name: "some full_name", gender: 42, password: "some password", status: 42}
-    @update_attrs %{email: "some updated email", full_name: "some updated full_name", gender: 43, password: "some updated password", status: 43}
-    @invalid_attrs %{email: nil, full_name: nil, gender: nil, password: nil, status: nil}
+    @valid_attrs params_for(:user)
+    @update_attrs params_for(:update_user)
+    @invalid_attrs params_for(:invalid_user)
 
-    def user_fixture(attrs \\ %{}) do
-      {:ok, user} =
-        attrs
-        |> Enum.into(@valid_attrs)
-        |> Accounts.create_user()
-
-      user
+    def user_fixture() do
+      insert(:user)
     end
 
     test "list_user/0 returns all user" do
@@ -31,11 +27,11 @@ defmodule Liulo.AccountsTest do
 
     test "create_user/1 with valid data creates a user" do
       assert {:ok, %User{} = user} = Accounts.create_user(@valid_attrs)
-      assert user.email == "some email"
-      assert user.full_name == "some full_name"
-      assert user.gender == 42
-      assert user.password == "some password"
-      assert user.status == 42
+      assert user.email == "test@dwarvesv.com"
+      assert user.full_name == "test full name"
+      assert user.gender == :female
+      assert user.password == "password"
+      assert user.status == :active
     end
 
     test "create_user/1 with invalid data returns error changeset" do
@@ -46,11 +42,11 @@ defmodule Liulo.AccountsTest do
       user = user_fixture()
       assert {:ok, user} = Accounts.update_user(user, @update_attrs)
       assert %User{} = user
-      assert user.email == "some updated email"
-      assert user.full_name == "some updated full_name"
-      assert user.gender == 43
-      assert user.password == "some updated password"
-      assert user.status == 43
+      assert user.email == "test_update@dwarvesv.com"
+      assert user.full_name == "test full name update"
+      assert user.gender == :male
+      assert user.password == "passwordupdate"
+      assert user.status == :inactive
     end
 
     test "update_user/2 with invalid data returns error changeset" do
