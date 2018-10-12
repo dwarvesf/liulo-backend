@@ -30,7 +30,7 @@ services:
     volumes:
     - .:/app
     depends_on:
-      - web
+    - web
     command: mix test
 
   prod:

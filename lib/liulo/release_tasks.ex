@@ -6,7 +6,7 @@ defmodule Liulo.ReleaseTasks do
     :ecto
   ]
 
-  @repos Application.get_env(:my_app, :ecto_repos, [])
+  @repos Application.get_env(:liulo, :ecto_repos, [])
 
   def migrate(_argv) do
     start_services()
