@@ -72,3 +72,7 @@ config :liulo, Liulo.Repo,
   database: "${POSTGRES_DATABASE}",
   hostname: "${POSTGRES_HOST}",
   pool_size: 20
+
+config :liulo, Liulo.Guardian,
+  issuer: "liulo",
+  secret_key: "${SECRET_KEY}"

@@ -41,12 +41,12 @@ before_install:
 
 jobs:
   include:
-    # - stage: test
-    #   script: make test
-    #   if: branch =~ /^feature(\/.*$|)/ OR branch =~ /^hotfix(\/.*$|)/
+    - stage: test
+      script: make test
+      if: branch =~ /^feature(\/.*$|)/ OR branch =~ /^hotfix(\/.*$|)/
     - stage: ship-prod
       script: make ship-prod
-      if: branch = feature/cicd OR branch = develop
+      if: branch = develop
     - stage: deploy
       script: make deploy
-      if: branch = feature/cicd OR branch = develop
+      if: branch = develop
