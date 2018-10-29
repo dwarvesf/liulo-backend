@@ -2,6 +2,8 @@ defmodule Liulo.Factory do
   use ExMachina.Ecto, repo: Liulo.Repo
   #User
   alias Liulo.Accounts.User
+  alias Liulo.Events.Question
+  alias Liulo.Events.Question_Vote
 
   def user_factory do
     %User{email: "test@dwarvesv.com",
@@ -81,4 +83,29 @@ defmodule Liulo.Factory do
     }
   end
 
+  #Question
+  def question_factory do
+    %Question {
+      description: "question description",
+      is_anonymous: true,
+      status: :pending,
+      vote_count: 0
+    }
+  end
+  def update_question_factory do
+    %Question {
+      description: "update question description",
+      is_anonymous: true,
+      status: :anwsered,
+      vote_count: 1
+    }
+  end
+  def invalid_question_factory do
+    %Question {
+      description: "",
+      is_anonymous: true,
+      status: :anwsered,
+      vote_count: 42
+    }
+  end
 end

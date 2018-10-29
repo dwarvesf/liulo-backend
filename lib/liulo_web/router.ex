@@ -24,10 +24,9 @@ defmodule LiuloWeb.Router do
 
     post "/login_google", AuthController, :callback
     resources "/topic", TopicController, only: [:show] do
-      get "/question", QuestionController, :question_by_topic
+      # get "/question", QuestionController, :question_by_topic
     end
-    resources "/question", QuestionController, except: [:index]do
-    end
+    get "/question/guest", QuestionController, :index_guest
   end
 
   scope "/api/v1", LiuloWeb do
@@ -40,11 +39,12 @@ defmodule LiuloWeb.Router do
     end
 
     resources "/topic", TopicController, except: [:new, :edit] do
-      get "/question/login", QuestionController, :question_by_topic
+      get "/question", QuestionController, :question_by_topic
+      resources "/question", QuestionController do
+        resources "/question_vote", QuestionVoteController, only: [:delete]
+        post "/question_vote", QuestionVoteController, :create
+      end
     end
-    resources "/question/login", QuestionController do
-    end
-    resources "/question_vote", QuestionVoteController, except: [:new, :edit,:index, :show, :update]
   end
 
 end
