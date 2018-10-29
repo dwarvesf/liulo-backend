@@ -220,6 +220,23 @@ defmodule Liulo.Events do
     topic = topic |> Repo.preload(:questions)
     topic.questions
   end
+  # def list_question_by_topic(%Topic{} = topic, owner) do
+
+
+  #   query_questions = from question in Question,
+  #                     where: question.topic_id == ^topic.id,
+  #                       select: %{id: question.id,
+  #                               description: question.description,
+  #                               vote_count: question.vote_count,
+  #                               status: question.status,
+  #                               is_anonymous: question.is_anonymous,
+  #                               owner_id: question.owner_id,
+  #                             }
+  #   query
+  #   Repo.all(query_questions)
+  # end
+
+
 
   @doc """
   Gets a single question.
@@ -305,8 +322,6 @@ defmodule Liulo.Events do
   end
 
   alias Liulo.Events.Question
-
-  def get_question_vote!(id), do: Repo.get!(QuestionVote, id)
 
   @doc """
   Creates a question_vote.

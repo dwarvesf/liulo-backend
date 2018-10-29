@@ -6,13 +6,12 @@ defmodule LiuloWeb.QuestionVoteController do
   alias Liulo.Events
   alias Liulo.Events.QuestionVote
   alias Liulo.Repo
-  alias Liulo.Events.Question
 
   action_fallback LiuloWeb.FallbackController
 
-  def create(conn, %{"question_id" => id}) do
+  def create(conn, %{ "question_id" => question_id}) do
     upvote_user = Liulo.Guardian.Plug.current_resource(conn)
-    question = Events.get_question!(id)
+    question = Events.get_question!(question_id)
     query = from qv in QuestionVote, where: qv.user_id == ^upvote_user.id and qv.question_id == ^question.id
     existed = Repo.all(query) |> Enum.count > 0
 
@@ -30,15 +29,16 @@ defmodule LiuloWeb.QuestionVoteController do
 
   defp update_number_of_vote_for_question(question) do
     query = from qv in QuestionVote, where: qv.question_id == ^question.id
-    count = Repo.all(query) |> Enum.count
-    Events.update_question(question, %{vote_count: count})
+    with count <- Repo.all(query) |> Enum.count do
+      Events.update_question(question, %{vote_count: count})
+
+    end
   end
 
 
-  def delete(conn, %{"id" => id}) do
-    question = Events.get_question!(id)
+  def delete(conn, %{ "question_id" => question_id}) do
     user = Liulo.Guardian.Plug.current_resource(conn)
-    with Events.delete_question_vote(question.id, user.id) do
+    with Events.delete_question_vote(question_id, user.id) do
      send_resp(conn, :no_content, "")
     end
   end

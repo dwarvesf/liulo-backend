@@ -1,26 +1,52 @@
 defmodule LiuloWeb.QuestionController do
+
+  import Ecto.Query
   use LiuloWeb, :controller
   alias Liulo.Events
   alias Liulo.Events.Question
   alias Liulo.Events.Topic
   alias Liulo.Accounts.User
+  alias Liulo.Events.QuestionVote
+  alias Liulo.Repo
 
   action_fallback LiuloWeb.FallbackController
 
   def question_by_topic(conn, %{"topic_id" => id}) do
+    owner_id = Liulo.Guardian.Plug.current_resource(conn).id
+
     topic = Events.get_topic!(id)
     questions = Events.list_question_by_topic(topic) |> Enum.sort_by(fn(p) -> p.vote_count end)
-    render(conn, "index.json", question: questions)
+
+    query = from qv in QuestionVote, where: qv.user_id == ^owner_id
+    question_votes = Repo.all(query)
+
+    is_voteds =
+      questions
+      |> Enum.map(fn(%Question{:id => id}) ->
+        question_votes
+        |> Enum.filter(
+          fn(%QuestionVote{:question_id => question_id}) -> question_id == id end)
+        |> Enum.count() > 0
+      end)
+
+
+    # results = Enum.zip(is_voteds, questions)
+
+    # IO.inspect "------------------"
+    # IO.inspect results
+    render(conn, "is_voted.json", questions: questions, is_votes: is_voteds)
   end
 
   def create(conn, %{"topic_id" => topic_id, "question" => question_params}) do
-
+    # topic = Liulo.Repo.get_by!(Topic, id: topic_id)
+    # owner =  Liulo.Guardian.Plug.current_resource(conn)
+    # {:ok, question} = Events.create_question(owner, topic, question_params)
     with %Topic{} = topic <- Liulo.Repo.get_by!(Topic, id: topic_id),
-    %User{} = owner <-  Liulo.Guardian.Plug.current_resource(conn),
+          %User{} = owner <-  Liulo.Guardian.Plug.current_resource(conn),
         {:ok, %Question{} = question} <- Events.create_question(owner, topic, question_params) do
+      IO.inspect question
       conn
       |> put_status(:created)
-      |> put_resp_header("location", question_path(conn, :show, question))
       |> render("show.json", question: question)
     end
 
