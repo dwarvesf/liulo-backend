@@ -10,11 +10,6 @@ defmodule LiuloWeb.QuestionVoteControllerTest do
   @update_attrs %{question: "some updated question"}
   @invalid_attrs %{question_id: ""}
 
-  # def fixture(:question_vote) do
-  #   {:ok, question_vote} = Events.create_question_vote(@create_attrs)
-  #   question_vote
-  # end
-
   setup %{conn: conn} do
     user = insert(:user)
     {:ok, jwt, _claims} = Guardian.encode_and_sign(user)
@@ -31,7 +26,7 @@ defmodule LiuloWeb.QuestionVoteControllerTest do
       question = insert(:question)
       topic = insert(:topic)
       conn = post conn, topic_question_question_vote_path(conn, :create, topic.id, question.id)
-      assert %{"message" => "ok"} = json_response(conn, 200)
+      assert %{} = json_response(conn, 200)["data"]
     end
 
 
@@ -43,7 +38,7 @@ defmodule LiuloWeb.QuestionVoteControllerTest do
       topic = insert(:topic)
 
       post_conn = post conn, topic_question_question_vote_path(conn, :create, topic.id, question.id)
-      assert %{"message" => "ok"} = json_response(post_conn, 200)
+      assert %{} = json_response(post_conn, 200)["data"]
       delete_conn = delete conn, topic_question_question_vote_path(conn, :delete, :create, topic.id, question.id)
       assert response(delete_conn, 204)
 end

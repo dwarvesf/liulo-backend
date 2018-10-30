@@ -7,6 +7,7 @@ defmodule Liulo.Events do
   alias Liulo.Repo
   alias Liulo.Accounts.User
   alias Liulo.Events.Event
+  alias Ecto.Multi
   @doc """
   Returns the list of event.
 
@@ -218,25 +219,8 @@ defmodule Liulo.Events do
   """
   def list_question_by_topic(%Topic{} = topic) do
     topic = topic |> Repo.preload(:questions)
-    topic.questions
+    topic.questions |> Enum.sort_by(fn(p) -> p.vote_count end)
   end
-  # def list_question_by_topic(%Topic{} = topic, owner) do
-
-
-  #   query_questions = from question in Question,
-  #                     where: question.topic_id == ^topic.id,
-  #                       select: %{id: question.id,
-  #                               description: question.description,
-  #                               vote_count: question.vote_count,
-  #                               status: question.status,
-  #                               is_anonymous: question.is_anonymous,
-  #                               owner_id: question.owner_id,
-  #                             }
-  #   query
-  #   Repo.all(query_questions)
-  # end
-
-
 
   @doc """
   Gets a single question.
@@ -337,11 +321,16 @@ defmodule Liulo.Events do
   """
   alias Liulo.Events.QuestionVote
   def create_question_vote(question, user) do
-    %QuestionVote{}
-    |> QuestionVote.changeset(%{})
-    |> Ecto.Changeset.put_assoc(:question, question)
-    |> Ecto.Changeset.put_assoc(:user, user)
-    |> Repo.insert()
+
+    Multi.new()
+    |> Multi.insert(:question_vote,
+      QuestionVote.changeset(%QuestionVote{}, %{})
+      |> Ecto.Changeset.put_assoc(:question, question)
+      |> Ecto.Changeset.put_assoc(:user, user)
+      )
+    |> Multi.run(:update_number_of_vote, fn _  ->
+      update_number_of_vote_for_question(question) end)
+    |> Repo.transaction()
   end
   @doc """
   Deletes a QuestionVote.
@@ -358,6 +347,12 @@ defmodule Liulo.Events do
   def delete_question_vote(question_id, user_id) do
     query = from qv in QuestionVote, where: qv.user_id == ^user_id and qv.question_id == ^question_id
     Repo.delete_all(query)
+  end
+  defp update_number_of_vote_for_question(question) do
+    query = from qv in QuestionVote, where: qv.question_id == ^question.id
+    with count <- Repo.all(query) |> Enum.count do
+      update_question(question, %{vote_count: count})
+    end
   end
 
 end
