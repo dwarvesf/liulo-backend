@@ -28,23 +28,13 @@ defmodule LiuloWeb.QuestionController do
           fn(%QuestionVote{:question_id => question_id}) -> question_id == id end)
         |> Enum.count() > 0
       end)
-
-
-    # results = Enum.zip(is_voteds, questions)
-
-    # IO.inspect "------------------"
-    # IO.inspect results
     render(conn, "is_voted.json", questions: questions, is_votes: is_voteds)
   end
 
   def create(conn, %{"topic_id" => topic_id, "question" => question_params}) do
-    # topic = Liulo.Repo.get_by!(Topic, id: topic_id)
-    # owner =  Liulo.Guardian.Plug.current_resource(conn)
-    # {:ok, question} = Events.create_question(owner, topic, question_params)
     with %Topic{} = topic <- Liulo.Repo.get_by!(Topic, id: topic_id),
           %User{} = owner <-  Liulo.Guardian.Plug.current_resource(conn),
         {:ok, %Question{} = question} <- Events.create_question(owner, topic, question_params) do
-      IO.inspect question
       conn
       |> put_status(:created)
       |> render("show.json", question: question)

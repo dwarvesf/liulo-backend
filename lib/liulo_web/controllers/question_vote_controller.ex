@@ -15,8 +15,6 @@ defmodule LiuloWeb.QuestionVoteController do
     existed = Repo.get_by(QuestionVote, [user_id: upvote_user.id , question_id: question.id]) != nil
     if existed == false do
       with {:ok, %{question_vote: question_vote}} <- Events.create_question_vote(question, upvote_user) do
-        IO.inspect "--------------------------"
-        IO.inspect question_vote
         render(conn, "show.json", question_vote: question_vote)
       end
     else

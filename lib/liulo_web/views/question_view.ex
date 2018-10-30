@@ -37,9 +37,6 @@ defmodule LiuloWeb.QuestionView do
       is_voted: is_vote
     }
     end)
-
-    # IO.inspect(questions)
-    # IO.inspect(is_votes)
   end
 
 end

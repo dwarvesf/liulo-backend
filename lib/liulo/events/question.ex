@@ -8,8 +8,6 @@ defmodule Liulo.Events.Question do
     field :is_anonymous, :boolean, default: false
     field :status, QuestionStatusEnum, default: :pending
     field :vote_count, :integer , default: 0
-    # field :owner_id, :id
-    # field :topic_id, :id
     belongs_to(:owner, Liulo.Accounts.User)
     belongs_to(:topic, Liulo.Events.Topic)
 
