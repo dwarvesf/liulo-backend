@@ -24,7 +24,6 @@ defmodule LiuloWeb.Router do
 
     post "/login_google", AuthController, :callback
     resources "/topic", TopicController, only: [:show] do
-      # get "/question", QuestionController, :question_by_topic
     end
     get "/question/guest", QuestionController, :index_guest
   end

@@ -15,8 +15,8 @@ defmodule Liulo.Events.Question do
 
     timestamps()
   end
-  @required_fields ~w(description is_anonymous)a
-  @optional_fields ~w(status vote_count)a
+  @required_fields ~w(description)a
+  @optional_fields ~w(status vote_count is_anonymous)a
   @doc false
   def changeset(question, attrs) do
     question
