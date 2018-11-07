@@ -3,13 +3,6 @@ defmodule LiuloWeb.QuestionVoteControllerTest do
   import Liulo.Factory
   alias Liulo.Guardian
 
-  alias Liulo.Events
-  alias Liulo.Events.QuestionVote
-
-  @create_attrs %{"id": 1}
-  @update_attrs %{question: "some updated question"}
-  @invalid_attrs %{question_id: ""}
-
   setup %{conn: conn} do
     user = insert(:user)
     {:ok, jwt, _claims} = Guardian.encode_and_sign(user)
@@ -32,15 +25,15 @@ defmodule LiuloWeb.QuestionVoteControllerTest do
 
   end
 
-  describe "delete question_vote" do
-    test "deletes chosen question_vote", %{conn: conn} do
-      question = insert(:question)
-      topic = insert(:topic)
+#   describe "delete question_vote" do
+#     test "deletes chosen question_vote", %{conn: conn} do
+#       question = insert(:question)
+#       topic = insert(:topic)
 
-      post_conn = post conn, topic_question_question_vote_path(conn, :create, topic.id, question.id)
-      assert %{} = json_response(post_conn, 200)["data"]
-      delete_conn = delete conn, topic_question_question_vote_path(conn, :delete, :create, topic.id, question.id)
-      assert response(delete_conn, 204)
-end
+#       post_conn = post conn, topic_question_question_vote_path(conn, :create, topic.id, question.id)
+#       assert %{} = json_response(post_conn, 200)["data"]
+#       delete_conn = delete conn, topic_question_question_vote_path(conn, :delete, :create, topic.id, question.id)
+#       assert response(delete_conn, 204)
+# end
   end
 end

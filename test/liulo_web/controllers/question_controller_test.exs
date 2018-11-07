@@ -3,12 +3,7 @@ defmodule LiuloWeb.QuestionControllerTest do
   import Liulo.Factory
   alias Liulo.Guardian
 
-  alias Liulo.Events
-  alias Liulo.Events.Question
-
   @create_attrs params_for(:question)
-  @update_attrs params_for(:update_question)
-  @invalid_attrs %{}
 
   setup %{conn: conn} do
     user = insert(:user)
@@ -40,7 +35,4 @@ defmodule LiuloWeb.QuestionControllerTest do
     end
   end
 
-  defp create_question(_) do
-    question = insert(:question)
-  end
 end

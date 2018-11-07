@@ -15,7 +15,7 @@ defmodule LiuloWeb.QuestionController do
     owner_id = Liulo.Guardian.Plug.current_resource(conn).id
 
     topic = Events.get_topic!(id)
-    questions = Events.list_question_by_topic(topic) |> Enum.sort_by(fn(p) -> p.vote_count end)
+    questions = Events.list_question_by_topic(topic)
 
     query = from qv in QuestionVote, where: qv.user_id == ^owner_id
     question_votes = Repo.all(query)

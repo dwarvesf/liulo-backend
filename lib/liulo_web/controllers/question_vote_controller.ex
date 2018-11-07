@@ -24,7 +24,8 @@ defmodule LiuloWeb.QuestionVoteController do
 
   def delete(conn, %{ "question_id" => question_id}) do
     user = Liulo.Guardian.Plug.current_resource(conn)
-    with Events.delete_question_vote(question_id, user.id) do
+    question = Events.get_question!(question_id)
+    with Events.delete_question_vote(question, user.id) do
      send_resp(conn, :no_content, "")
     end
   end

@@ -9,7 +9,6 @@ defmodule Liulo.EventsTest do
     alias Liulo.Events.Event
 
     @valid_attrs params_for(:event) |> Liulo.TestHelper.stringify_keys
-    @update_attrs %{code: "some updated code", description: "some updated description", ended_at: ~N[2011-05-18 15:01:01.000000], name: "some updated name", started_at: ~N[2011-05-18 15:01:01.000000], status: 43}
     @invalid_attrs %{code: nil, description: nil, ended_at: nil, name: nil, started_at: nil, status: nil}
 
     def event_fixture(attrs \\ %{}) do
@@ -209,11 +208,7 @@ defmodule Liulo.EventsTest do
   end
 
   describe "question_vote" do
-    alias Liulo.Events.QuestionVote
-
     @valid_attrs %{}
-    @update_attrs %{}
-    @invalid_attrs %{}
 
     def question_vote_fixture(attrs \\ %{}) do
       {:ok, question_vote} =
@@ -233,8 +228,8 @@ defmodule Liulo.EventsTest do
     test "delete_question_vote/1 deletes the question_vote" do
       question = question_fixture()
       user = insert(:user)
-      question_vote = Events.create_question_vote(question, user)
-      assert {1, _} = Events.delete_question_vote(question.id, user.id)
+      Events.create_question_vote(question, user)
+      assert {1, _} = Events.delete_question_vote(question, user.id)
     end
   end
 end
