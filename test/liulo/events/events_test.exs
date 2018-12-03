@@ -9,7 +9,6 @@ defmodule Liulo.EventsTest do
     alias Liulo.Events.Event
 
     @valid_attrs params_for(:event) |> Liulo.TestHelper.stringify_keys
-    @update_attrs %{code: "some updated code", description: "some updated description", ended_at: ~N[2011-05-18 15:01:01.000000], name: "some updated name", started_at: ~N[2011-05-18 15:01:01.000000], status: 43}
     @invalid_attrs %{code: nil, description: nil, ended_at: nil, name: nil, started_at: nil, status: nil}
 
     def event_fixture(attrs \\ %{}) do
@@ -134,6 +133,103 @@ defmodule Liulo.EventsTest do
     test "change_topic/1 returns a topic changeset" do
       topic = topic_fixture()
       assert %Ecto.Changeset{} = Events.change_topic(topic)
+    end
+  end
+
+  describe "question" do
+    alias Liulo.Events.Question
+
+    @valid_attrs params_for(:question)
+    @update_attrs params_for(:update_question)
+    @invalid_attrs params_for(:invalid_question)
+
+    def question_fixture(attrs \\ %{}) do
+      insert(:question, attrs)
+    end
+
+    test "list_question/0 returns all question" do
+      topic = topic_fixture()
+      question = question_fixture(topic: topic) |> Unpreloader.forget(:topic) |> Unpreloader.forget(:owner)
+      assert Events.list_question_by_topic(topic)  == [question]
+    end
+
+    test "get_question!/1 returns the question with given id" do
+      question = question_fixture()
+      assert Events.get_question!(question.id) == question
+    end
+
+    test "create_question/1 with valid data creates a question" do
+      #owner
+      user = insert(:user)
+      #topic
+      topic = topic_fixture()
+
+      assert {:ok, %Question{} = question} = Events.create_question(user, topic, @valid_attrs)
+      assert question.description == "question description"
+      assert question.is_anonymous == true
+      assert question.status == :pending
+      assert question.vote_count == 0
+    end
+
+    test "create_question/1 with invalid data returns error changeset" do
+      #owner
+      user = insert(:user)
+      #topic
+      topic = topic_fixture()
+      assert {:error, %Ecto.Changeset{}} = Events.create_question(user, topic, @invalid_attrs)
+    end
+
+    test "update_question/2 with valid data updates the question" do
+
+      question = question_fixture()
+      assert {:ok, question} = Events.update_question(question, @update_attrs)
+      assert question.description == "update question description"
+      assert question.is_anonymous == true
+      assert question.status == :anwsered
+      assert question.vote_count == 1
+    end
+
+    test "update_question/2 with invalid data returns error changeset" do
+      question = question_fixture()
+      assert {:error, %Ecto.Changeset{}} = Events.update_question(question, @invalid_attrs)
+      assert question == Events.get_question!(question.id)
+    end
+
+    test "delete_question/1 deletes the question" do
+      question = question_fixture()
+      assert {:ok, %Question{}} = Events.delete_question(question)
+      assert_raise Ecto.NoResultsError, fn -> Events.get_question!(question.id) end
+    end
+
+    test "change_question/1 returns a question changeset" do
+      question = question_fixture()
+      assert %Ecto.Changeset{} = Events.change_question(question)
+    end
+  end
+
+  describe "question_vote" do
+    @valid_attrs %{}
+
+    def question_vote_fixture(attrs \\ %{}) do
+      {:ok, question_vote} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> Events.create_question_vote()
+
+      question_vote
+    end
+    test "create_question_vote/1 with valid data creates a question_vote" do
+      question = question_fixture()
+      user = insert(:user)
+      assert {:ok , question_vote } = Events.create_question_vote(question, user)
+    end
+
+
+    test "delete_question_vote/1 deletes the question_vote" do
+      question = question_fixture()
+      user = insert(:user)
+      Events.create_question_vote(question, user)
+      assert {1, _} = Events.delete_question_vote(question, user.id)
     end
   end
 end

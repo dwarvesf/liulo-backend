@@ -7,6 +7,7 @@ defmodule Liulo.Events do
   alias Liulo.Repo
   alias Liulo.Accounts.User
   alias Liulo.Events.Event
+  alias Ecto.Multi
   @doc """
   Returns the list of event.
 
@@ -204,4 +205,155 @@ defmodule Liulo.Events do
     event = event |> Repo.preload(:topics)
     event.topics
   end
+
+  alias Liulo.Events.Question
+
+  @doc """
+  Returns the list of question.
+
+  ## Examples
+
+      iex> list_question()
+      [%Question{}, ...]
+
+  """
+  def list_question_by_topic(%Topic{} = topic) do
+    query = from q in Question, where: q.topic_id == ^topic.id, order_by: [desc: q.vote_count]
+    Repo.all(query)
+  end
+
+  @doc """
+  Gets a single question.
+
+  Raises `Ecto.NoResultsError` if the Question does not exist.
+
+  ## Examples
+
+      iex> get_question!(123)
+      %Question{}
+
+      iex> get_question!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_question!(id), do: Repo.get!(Question, id)
+
+  @doc """
+  Creates a question.
+
+  ## Examples
+
+      iex> create_question(%{field: value})
+      {:ok, %Question{}}
+
+      iex> create_question(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_question(owner, topic, attrs \\ %{}) do
+    %Question{}
+    |> Question.changeset(attrs)
+    |> Ecto.Changeset.put_assoc(:topic, topic)
+    |> Ecto.Changeset.put_assoc(:owner, owner)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a question.
+
+  ## Examples
+
+      iex> update_question(question, %{field: new_value})
+      {:ok, %Question{}}
+
+      iex> update_question(question, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_question(%Question{} = question, attrs) do
+    question
+    |> Question.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a Question.
+
+  ## Examples
+
+      iex> delete_question(question)
+      {:ok, %Question{}}
+
+      iex> delete_question(question)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_question(%Question{} = question) do
+    Repo.delete(question)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking question changes.
+
+  ## Examples
+
+      iex> change_question(question)
+      %Ecto.Changeset{source: %Question{}}
+
+  """
+  def change_question(%Question{} = question) do
+    Question.changeset(question, %{})
+  end
+
+  alias Liulo.Events.Question
+
+  @doc """
+  Creates a question_vote.
+
+  ## Examples
+
+      iex> create_question_vote(%{field: value})
+      {:ok, %QuestionVote{}}
+
+      iex> create_question_vote(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  alias Liulo.Events.QuestionVote
+  def create_question_vote(question, user) do
+
+    Multi.new()
+    |> Multi.insert(:question_vote,
+      QuestionVote.changeset(%QuestionVote{}, %{})
+      |> Ecto.Changeset.put_assoc(:question, question)
+      |> Ecto.Changeset.put_assoc(:user, user)
+      )
+    |> Multi.run(:update_number_of_vote, fn _  ->
+      update_number_of_vote_for_question(question) end)
+    |> Repo.transaction()
+  end
+  @doc """
+  Deletes a QuestionVote.
+
+  ## Examples
+
+      iex> delete_question_vote(question_vote)
+      {:ok, %QuestionVote{}}
+
+      iex> delete_question_vote(question_vote)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_question_vote(question, user_id) do
+    query = from qv in QuestionVote, where: qv.user_id == ^user_id and qv.question_id == ^question.id
+    delete = Repo.delete_all(query)
+    update_number_of_vote_for_question(question)
+    delete
+  end
+  defp update_number_of_vote_for_question(question) do
+    query = from qv in QuestionVote, where: qv.question_id == ^question.id
+    count = Repo.aggregate(query, :count, :question_id)
+    update_question(question, %{vote_count: count})
+  end
+
 end

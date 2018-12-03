@@ -14,6 +14,9 @@ defmodule Liulo.Events.Topic do
     # field :owner_id, :id
     belongs_to(:event, Liulo.Events.Event)
     belongs_to(:owner, Liulo.Accounts.User)
+
+    has_many(:questions, Liulo.Events.Question, foreign_key: :topic_id)
+
     timestamps()
   end
   @required_fields ~w(name)a
