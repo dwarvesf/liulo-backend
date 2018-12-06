@@ -52,7 +52,7 @@ config :liulo, Liulo.Repo,
   username: System.get_env("POSTGRES_USER") || "postgres",
   password: System.get_env("POSTGRES_PASSWORD") || "postgres",
   hostname: System.get_env("POSTGRES_HOST") || "localhost",
-  port: System.get_env("POSTGRES_PORT") || 5433,
+  port: System.get_env("POSTGRES_PORT") || 5432,
   database: "liulo_dev",
   pool_size: 10
 
