@@ -4,7 +4,7 @@ defmodule LiuloWeb.UserController do
   alias Liulo.Accounts
   alias Liulo.Accounts.User
 
-  action_fallback LiuloWeb.FallbackController
+  action_fallback(LiuloWeb.FallbackController)
 
   def index(conn, _params) do
     user = Accounts.list_user()
@@ -35,6 +35,7 @@ defmodule LiuloWeb.UserController do
 
   def delete(conn, %{"id" => id}) do
     user = Accounts.get_user!(id)
+
     with {:ok, %User{}} <- Accounts.delete_user(user) do
       send_resp(conn, :no_content, "")
     end

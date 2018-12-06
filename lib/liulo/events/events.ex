@@ -8,6 +8,7 @@ defmodule Liulo.Events do
   alias Liulo.Accounts.User
   alias Liulo.Events.Event
   alias Ecto.Multi
+
   @doc """
   Returns the list of event.
 
@@ -22,6 +23,7 @@ defmodule Liulo.Events do
     user = user |> Repo.preload(:events)
     user.events
   end
+
   @doc """
   Gets a single event.
 
@@ -53,21 +55,13 @@ defmodule Liulo.Events do
   def create_event(owner, attrs \\ %{}) do
     attrs =
       attrs
-      |> Map.put("code", genarate_code())
+      |> Map.put("code", genarate_code(:event))
+
     %Event{}
     |> Event.changeset(attrs)
     |> Ecto.Changeset.put_assoc(:owner, owner)
     |> Repo.insert()
   end
-
-
-  defp genarate_code do
-    random_code = Liulo.Utils.Randomizer.randomizer(4, :upcase)
-    existed_event_by_code = Event |> Repo.get_by(code: random_code)
-    check_code_unique(existed_event_by_code, random_code)
-  end
-  defp check_code_unique(nil, code), do:  code
-  defp check_code_unique(_, _), do: genarate_code()
 
   @doc """
   Updates a event.
@@ -134,6 +128,39 @@ defmodule Liulo.Events do
   """
   def get_topic!(id), do: Repo.get!(Topic, id)
 
+  def get_topic_by_code!(id, nil) do
+    query =
+      from(t in Topic,
+        left_join: q in assoc(t, :questions),
+        on: q.status != ^"pending",
+        left_join: o in assoc(q, :owner),
+        left_join: qv in assoc(q, :question_votes),
+        left_join: u in assoc(qv, :user),
+        on: u.id == ^1,
+        where: t.code == ^id,
+        order_by: [desc: q.vote_count],
+        preload: [questions: {q, owner: o, question_votes: qv}]
+      )
+
+    Repo.one!(query)
+  end
+
+  def get_topic_by_code!(id, user) do
+    query =
+      from(t in Topic,
+        left_join: q in assoc(t, :questions),
+        on: q.status != ^"pending",
+        left_join: o in assoc(q, :owner),
+        left_join: qv in assoc(q, :question_votes),
+        left_join: u in assoc(qv, :user),
+        on: u.id == ^user.id,
+        where: t.code == ^id,
+        preload: [questions: {q, owner: o, question_votes: qv}]
+      )
+
+    Repo.one!(query)
+  end
+
   @doc """
   Creates a topic.
 
@@ -147,6 +174,10 @@ defmodule Liulo.Events do
 
   """
   def create_topic(event, owner, attrs \\ %{}) do
+    attrs =
+      attrs
+      |> Map.put("code", genarate_code(:topic))
+
     %Topic{}
     |> Topic.changeset(attrs)
     |> Ecto.Changeset.put_assoc(:event, event)
@@ -218,7 +249,7 @@ defmodule Liulo.Events do
 
   """
   def list_question_by_topic(%Topic{} = topic) do
-    query = from q in Question, where: q.topic_id == ^topic.id, order_by: [desc: q.vote_count]
+    query = from(q in Question, where: q.topic_id == ^topic.id, order_by: [desc: q.vote_count])
     Repo.all(query)
   end
 
@@ -237,6 +268,20 @@ defmodule Liulo.Events do
 
   """
   def get_question!(id), do: Repo.get!(Question, id)
+
+  def get_question!(id, user) do
+    query =
+      from(q in Question,
+        left_join: o in assoc(q, :owner),
+        left_join: qv in assoc(q, :question_votes),
+        left_join: u in assoc(qv, :user),
+        on: u.id == ^user.id,
+        where: q.id == ^id,
+        preload: [owner: o, question_votes: qv]
+      )
+
+    Repo.one!(query)
+  end
 
   @doc """
   Creates a question.
@@ -320,18 +365,21 @@ defmodule Liulo.Events do
 
   """
   alias Liulo.Events.QuestionVote
-  def create_question_vote(question, user) do
 
+  def create_question_vote(question, user) do
     Multi.new()
-    |> Multi.insert(:question_vote,
+    |> Multi.insert(
+      :question_vote,
       QuestionVote.changeset(%QuestionVote{}, %{})
       |> Ecto.Changeset.put_assoc(:question, question)
       |> Ecto.Changeset.put_assoc(:user, user)
-      )
-    |> Multi.run(:update_number_of_vote, fn _  ->
-      update_number_of_vote_for_question(question) end)
+    )
+    |> Multi.run(:update_number_of_vote, fn _ ->
+      update_number_of_vote_for_question(question)
+    end)
     |> Repo.transaction()
   end
+
   @doc """
   Deletes a QuestionVote.
 
@@ -345,15 +393,35 @@ defmodule Liulo.Events do
 
   """
   def delete_question_vote(question, user_id) do
-    query = from qv in QuestionVote, where: qv.user_id == ^user_id and qv.question_id == ^question.id
-    delete = Repo.delete_all(query)
-    update_number_of_vote_for_question(question)
-    delete
+    Multi.new()
+    |> Multi.delete_all(
+      :question_votes,
+      from(qv in QuestionVote, where: qv.user_id == ^user_id and qv.question_id == ^question.id)
+    )
+    |> Multi.run(:update_question_vote, fn _ ->
+      update_number_of_vote_for_question(question)
+    end)
+    |> Repo.transaction()
   end
+
   defp update_number_of_vote_for_question(question) do
-    query = from qv in QuestionVote, where: qv.question_id == ^question.id
+    query = from(qv in QuestionVote, where: qv.question_id == ^question.id)
     count = Repo.aggregate(query, :count, :question_id)
     update_question(question, %{vote_count: count})
   end
 
+  defp genarate_code(type) do
+    random_code = Liulo.Utils.Randomizer.randomizer(4, :upcase)
+
+    object =
+      case type do
+        :topic -> Topic |> Repo.get_by(code: random_code)
+        _ -> Event |> Repo.get_by(code: random_code)
+      end
+
+    check_code_unique(object, type, random_code)
+  end
+
+  defp check_code_unique(nil, _type, code), do: code
+  defp check_code_unique(_, type, _), do: genarate_code(type)
 end

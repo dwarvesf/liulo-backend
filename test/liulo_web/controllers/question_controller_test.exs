@@ -8,6 +8,7 @@ defmodule LiuloWeb.QuestionControllerTest do
   setup %{conn: conn} do
     user = insert(:user)
     {:ok, jwt, _claims} = Guardian.encode_and_sign(user)
+
     conn =
       conn
       |> put_req_header("accept", "application/json")
@@ -19,9 +20,9 @@ defmodule LiuloWeb.QuestionControllerTest do
   describe "question by topic" do
     test "lists all question by topic", %{conn: conn} do
       topic = insert(:topic)
-      insert_list(3, :question, topic: topic)
-      get_conn = get conn, topic_question_path(conn, :question_by_topic, topic)
-      assert json_response(get_conn, 200) |> Enum.count == 3
+      insert_list(3, :question, topic: topic, status: :active)
+      get_conn = get(conn, topic_question_path(conn, :question_by_topic, topic))
+      assert json_response(get_conn, 200) |> Enum.count() == 3
     end
   end
 
@@ -29,10 +30,10 @@ defmodule LiuloWeb.QuestionControllerTest do
     test "renders question when data is valid", %{conn: conn} do
       topic = insert(:topic)
 
-      post_conn = post conn, topic_question_path(conn, :create, topic.id), question: @create_attrs
-      assert json_response(post_conn, 201)["data"]
+      post_conn =
+        post(conn, topic_question_path(conn, :create, topic.id), question: @create_attrs)
 
+      assert json_response(post_conn, 201)["data"]
     end
   end
-
 end

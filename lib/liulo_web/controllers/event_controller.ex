@@ -4,7 +4,7 @@ defmodule LiuloWeb.EventController do
   alias Liulo.Events
   alias Liulo.Events.Event
 
-  action_fallback LiuloWeb.FallbackController
+  action_fallback(LiuloWeb.FallbackController)
 
   def index(conn, _params) do
     user = Liulo.Guardian.Plug.current_resource(conn)
@@ -13,7 +13,8 @@ defmodule LiuloWeb.EventController do
   end
 
   def create(conn, %{"event" => event_params}) do
-    user =  Liulo.Guardian.Plug.current_resource(conn)
+    user = Liulo.Guardian.Plug.current_resource(conn)
+
     with {:ok, %Event{} = event} <- Events.create_event(user, event_params) do
       conn
       |> put_status(:created)
@@ -37,6 +38,7 @@ defmodule LiuloWeb.EventController do
 
   def delete(conn, %{"id" => id}) do
     event = Events.get_event!(id)
+
     with {:ok, %Event{}} <- Events.delete_event(event) do
       send_resp(conn, :no_content, "")
     end

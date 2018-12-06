@@ -2,7 +2,6 @@ defmodule Liulo.Events.QuestionVote do
   use Ecto.Schema
   import Ecto.Changeset
 
-
   schema "question_vote" do
     # field :question_id, :id
     # field :user_id, :id

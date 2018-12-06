@@ -15,7 +15,8 @@ use Mix.Config
 # which you typically run after static files are built.
 config :liulo, LiuloWeb.Endpoint,
   http: [port: {:system, "PORT"} || 80],
-  url: [host: {:system, "HOST"}, port: {:system, "PORT"} || 80], # This is critical for ensuring web-sockets properly authorize.
+  # This is critical for ensuring web-sockets properly authorize.
+  url: [host: {:system, "HOST"}, port: {:system, "PORT"} || 80],
   cache_static_manifest: "priv/static/cache_manifest.json",
   server: true,
   root: ".",

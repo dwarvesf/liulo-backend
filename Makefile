@@ -14,10 +14,10 @@ remove:
 	$(DC) rm -f web
 
 build:
-	$(DC) build
+	$(DC) build web
 
-run: remove build compile
-	$(DC) up web
+run: remove compile
+	$(DC) up --build web
 
 rund: compile remove
 	$(DC) up -d

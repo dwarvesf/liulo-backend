@@ -11,12 +11,14 @@ defmodule LiuloWeb.EventView do
   end
 
   def render("event.json", %{event: event}) do
-    %{id: event.id,
+    %{
+      id: event.id,
       code: event.code,
       name: event.name,
       description: event.description,
       started_at: event.started_at,
       ended_at: event.ended_at,
-      status: event.status}
+      status: event.status
+    }
   end
 end

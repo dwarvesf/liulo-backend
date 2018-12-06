@@ -11,7 +11,7 @@ defmodule Liulo.Application do
       # Start the Ecto repository
       supervisor(Liulo.Repo, []),
       # Start the endpoint when the application starts
-      supervisor(LiuloWeb.Endpoint, []),
+      supervisor(LiuloWeb.Endpoint, [])
       # Start your own worker by calling: Liulo.Worker.start_link(arg1, arg2, arg3)
       # worker(Liulo.Worker, [arg1, arg2, arg3]),
     ]

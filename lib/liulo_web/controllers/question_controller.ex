@@ -1,5 +1,4 @@
 defmodule LiuloWeb.QuestionController do
-
   import Ecto.Query
   use LiuloWeb, :controller
   alias Liulo.Events
@@ -9,7 +8,7 @@ defmodule LiuloWeb.QuestionController do
   alias Liulo.Events.QuestionVote
   alias Liulo.Repo
 
-  action_fallback LiuloWeb.FallbackController
+  action_fallback(LiuloWeb.FallbackController)
 
   def question_by_topic(conn, %{"topic_id" => id}) do
     owner_id = Liulo.Guardian.Plug.current_resource(conn).id
@@ -17,29 +16,30 @@ defmodule LiuloWeb.QuestionController do
     topic = Events.get_topic!(id)
     questions = Events.list_question_by_topic(topic)
 
-    query = from qv in QuestionVote, where: qv.user_id == ^owner_id
+    query = from(qv in QuestionVote, where: qv.user_id == ^owner_id)
     question_votes = Repo.all(query)
 
     is_voteds =
       questions
-      |> Enum.map(fn(%Question{:id => id}) ->
+      |> Enum.map(fn %Question{:id => id} ->
         question_votes
-        |> Enum.filter(
-          fn(%QuestionVote{:question_id => question_id}) -> question_id == id end)
+        |> Enum.filter(fn %QuestionVote{:question_id => question_id} -> question_id == id end)
         |> Enum.count() > 0
       end)
+
     render(conn, "is_voted.json", questions: questions, is_votes: is_voteds)
   end
 
   def create(conn, %{"topic_id" => topic_id, "question" => question_params}) do
     with %Topic{} = topic <- Liulo.Repo.get_by!(Topic, id: topic_id),
-          %User{} = owner <-  Liulo.Guardian.Plug.current_resource(conn),
-        {:ok, %Question{} = question} <- Events.create_question(owner, topic, question_params) do
+         %User{} = owner <- Liulo.Guardian.Plug.current_resource(conn),
+         {:ok, %Question{} = question} <- Events.create_question(owner, topic, question_params) do
+      question = Events.get_question!(question.id, owner)
+
       conn
       |> put_status(:created)
       |> render("show.json", question: question)
     end
-
   end
 
   def show(conn, %{"id" => id}) do
@@ -57,7 +57,17 @@ defmodule LiuloWeb.QuestionController do
 
   def delete(conn, %{"id" => id}) do
     question = Events.get_question!(id)
+
     with {:ok, %Question{}} <- Events.delete_question(question) do
+      send_resp(conn, :no_content, "")
+    end
+  end
+
+  def unvote(conn, %{"question_id" => id}) do
+    owner_id = Liulo.Guardian.Plug.current_resource(conn).id
+    question = Events.get_question!(id)
+
+    with {:ok, _} <- Events.delete_question_vote(question, owner_id) do
       send_resp(conn, :no_content, "")
     end
   end

@@ -11,10 +11,12 @@ defmodule LiuloWeb.UserView do
   end
 
   def render("user.json", %{user: user}) do
-    %{id: user.id,
+    %{
+      id: user.id,
       full_name: user.full_name,
       email: user.email,
       gender: user.gender,
-      status: user.status}
+      status: user.status
+    }
   end
 end

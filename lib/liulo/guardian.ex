@@ -9,6 +9,7 @@ defmodule Liulo.Guardian do
     # is a poor subject.
     {:ok, id}
   end
+
   def subject_for_token(_, _) do
     {:error, :reason_for_error}
   end
@@ -18,8 +19,9 @@ defmodule Liulo.Guardian do
     # found in the `"sub"` key. In `above subject_for_token/2` we returned
     # the resource id so here we'll rely on that to look it up.
     resource = Liulo.Accounts.get_user!(id)
-    {:ok,  resource}
+    {:ok, resource}
   end
+
   def resource_from_claims(_claims) do
     {:error, :reason_for_error}
   end
