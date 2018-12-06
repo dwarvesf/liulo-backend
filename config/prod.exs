@@ -22,8 +22,8 @@ config :liulo, LiuloWeb.Endpoint,
   root: ".",
   version: Application.spec(:liulo, :vsn)
 
-# Do not print debug messages in production
-config :logger, level: :info
+# Do not include metadata nor timestamps in development logs
+config :logger, :console, format: "[$level] $message\n"
 
 # ## SSL Support
 #
