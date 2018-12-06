@@ -19,7 +19,7 @@ defmodule LiuloWeb.QuestionView do
       is_anonymous: question.is_anonymous,
       owner_id: question.owner_id,
       owner: render_one(question.owner, LiuloWeb.UserView, "user.json"),
-      your_votes:
+      question_votes:
         render_many(question.question_votes, LiuloWeb.QuestionVoteView, "question_vote.json")
     }
   end

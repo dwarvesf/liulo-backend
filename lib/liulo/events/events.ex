@@ -136,8 +136,7 @@ defmodule Liulo.Events do
         left_join: o in assoc(q, :owner),
         left_join: qv in assoc(q, :question_votes),
         left_join: u in assoc(qv, :user),
-        on: u.id == ^1,
-        where: t.code == ^id,
+        where: t.code == ^id and t.status == ^"active",
         order_by: [desc: q.vote_count],
         preload: [questions: {q, owner: o, question_votes: qv}]
       )
@@ -152,9 +151,10 @@ defmodule Liulo.Events do
         on: q.status != ^"pending",
         left_join: o in assoc(q, :owner),
         left_join: qv in assoc(q, :question_votes),
+        on: qv.user_id == ^user.id,
         left_join: u in assoc(qv, :user),
         on: u.id == ^user.id,
-        where: t.code == ^id,
+        where: t.code == ^id and t.status == ^"active",
         preload: [questions: {q, owner: o, question_votes: qv}]
       )
 

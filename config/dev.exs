@@ -52,7 +52,7 @@ config :liulo, Liulo.Repo,
   username: System.get_env("POSTGRES_USER") || "postgres",
   password: System.get_env("POSTGRES_PASSWORD") || "postgres",
   hostname: System.get_env("POSTGRES_HOST") || "localhost",
-  port: System.get_env("POSTGRES_PORT") || 5432,
+  port: System.get_env("POSTGRES_PORT") || 5433,
   database: "liulo_dev",
   pool_size: 10
 
@@ -61,6 +61,6 @@ config :liulo, Liulo.Guardian,
   secret_key: "QvFQ5rk+wwLUhzdIFvvt8Bap+WsACHtnn2W1yUcx0LIcznf00evBn4MIQWS3JLVm"
 
 config :cors_plug,
-  origin: ["http://localhost:8080"],
+  origin: "*",
   max_age: 86400,
   methods: ["GET", "POST"]
