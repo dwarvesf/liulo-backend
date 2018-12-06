@@ -26,13 +26,13 @@ defmodule LiuloWeb.ConnCase do
     end
   end
 
-
   setup tags do
     :ok = Ecto.Adapters.SQL.Sandbox.checkout(Liulo.Repo)
+
     unless tags[:async] do
       Ecto.Adapters.SQL.Sandbox.mode(Liulo.Repo, {:shared, self()})
     end
+
     {:ok, conn: Phoenix.ConnTest.build_conn()}
   end
-
 end

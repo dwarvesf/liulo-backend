@@ -14,7 +14,7 @@ defmodule LiuloWeb.ErrorView do
     Phoenix.Controller.status_message_from_template(template)
   end
 
-  def render("error.json", [message: message]) do
+  def render("error.json", message: message) do
     %{
       error: %{
         message: message

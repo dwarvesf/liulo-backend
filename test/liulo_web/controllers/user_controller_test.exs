@@ -17,7 +17,6 @@ defmodule LiuloWeb.UserControllerTest do
   #   {:ok, conn: put_req_header(conn, "accept", "application/json")}
   # end
 
-
   # describe "create user" do
   #   test "renders user when data is valid", %{conn: conn} do
   #     post_conn = post conn, user_path(conn, :create), user: @create_attrs

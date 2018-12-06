@@ -16,6 +16,7 @@ defmodule LiuloWeb.EventControllerTest do
   setup %{conn: conn} do
     user = insert(:user)
     {:ok, jwt, _claims} = Guardian.encode_and_sign(user)
+
     conn =
       conn
       |> put_req_header("accept", "application/json")
@@ -26,23 +27,22 @@ defmodule LiuloWeb.EventControllerTest do
 
   describe "index" do
     test "lists all event", %{conn: conn} do
-      conn = get conn, event_path(conn, :index)
+      conn = get(conn, event_path(conn, :index))
       assert json_response(conn, 200)["data"] == []
     end
   end
 
   describe "create event" do
     test "renders event when data is valid", %{conn: conn} do
-
-      post_conn = post conn, event_path(conn, :create), event: @create_attrs
+      post_conn = post(conn, event_path(conn, :create), event: @create_attrs)
       assert %{"code" => id} = json_response(post_conn, 201)["data"]
 
-      get_conn = get conn, event_path(conn, :show, id)
+      get_conn = get(conn, event_path(conn, :show, id))
       assert json_response(get_conn, 200)["data"]
     end
 
     test "renders errors when data is invalid", %{conn: conn} do
-      conn = post conn, event_path(conn, :create), event: @invalid_attrs
+      conn = post(conn, event_path(conn, :create), event: @invalid_attrs)
       assert json_response(conn, 422)["errors"] != %{}
     end
   end
@@ -51,13 +51,14 @@ defmodule LiuloWeb.EventControllerTest do
     setup [:create_event]
 
     test "renders event when data is valid", %{conn: conn, event: %Event{id: id} = event} do
-      put_conn = put conn, event_path(conn, :update, event), event: @update_attrs
+      put_conn = put(conn, event_path(conn, :update, event), event: @update_attrs)
       assert %{"id" => ^id} = json_response(put_conn, 200)["data"]
-      get_conn = get conn, event_path(conn, :show, event.code)
+      get_conn = get(conn, event_path(conn, :show, event.code))
       assert json_response(get_conn, 200)["data"]
     end
+
     test "renders errors when data is invalid", %{conn: conn, event: event} do
-      conn = put conn, event_path(conn, :update, event), event: @invalid_attrs
+      conn = put(conn, event_path(conn, :update, event), event: @invalid_attrs)
       assert json_response(conn, 422)["errors"] != %{}
     end
   end
@@ -66,11 +67,12 @@ defmodule LiuloWeb.EventControllerTest do
     setup [:create_event]
 
     test "deletes chosen event", %{conn: conn, event: event} do
-      delete_conn = delete conn, event_path(conn, :delete, event)
+      delete_conn = delete(conn, event_path(conn, :delete, event))
       assert response(delete_conn, 204)
-      assert_error_sent 404, fn ->
-        get conn, event_path(conn, :show, event)
-      end
+
+      assert_error_sent(404, fn ->
+        get(conn, event_path(conn, :show, event))
+      end)
     end
   end
 

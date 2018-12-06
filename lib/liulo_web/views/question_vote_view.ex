@@ -11,7 +11,6 @@ defmodule LiuloWeb.QuestionVoteView do
   end
 
   def render("question_vote.json", %{question_vote: question_vote}) do
-    %{id: question_vote.id,
-      question: question_vote.id}
+    %{id: question_vote.id, question: question_vote.id, inserted_at: question_vote.inserted_at}
   end
 end
