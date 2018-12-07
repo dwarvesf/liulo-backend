@@ -18,7 +18,16 @@ defmodule LiuloWeb.EventView do
       description: event.description,
       started_at: event.started_at,
       ended_at: event.ended_at,
-      status: event.status
+      status: event.status,
+      topics: render_topics(event.topics)
     }
+  end
+
+  def render_topics(topics) do
+    if (Ecto.assoc_loaded?(topics)) do
+      render_many(topics, LiuloWeb.TopicView, "topic.json")
+    else
+      []
+    end
   end
 end

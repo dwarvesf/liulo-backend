@@ -161,6 +161,16 @@ defmodule Liulo.Events do
     Repo.one!(query)
   end
 
+  def get_topic_by_event_owner!(id, event_owner) do
+    query =
+      from(t in Topic,
+        join: e in assoc(t, :event),
+        where: t.id == ^id and e.owner_id == ^event_owner.id
+      )
+
+    Repo.one!(query)
+  end
+
   @doc """
   Creates a topic.
 

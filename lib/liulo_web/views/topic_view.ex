@@ -33,7 +33,24 @@ defmodule LiuloWeb.TopicView do
       speaker_names: topic.speaker_names,
       status: topic.status,
       code: topic.code,
-      questions: render_many(topic.questions, LiuloWeb.QuestionView, "question.json")
+      questions: render_questions(topic.questions),
+      owner: render_owner(topic.owner)
     }
+  end
+
+  def render_questions(questions) do
+    if (Ecto.assoc_loaded?(questions)) do
+      render_many(questions, LiuloWeb.QuestionView, "question.json")
+    else
+      []
+    end
+  end
+
+  def render_owner(owner) do
+    if (Ecto.assoc_loaded?(owner)) do
+      render_one(owner, LiuloWeb.UserView, "user.json")
+    else
+      nil
+    end
   end
 end

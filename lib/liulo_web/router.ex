@@ -33,13 +33,17 @@ defmodule LiuloWeb.Router do
     get("/me", UserController, :me)
     delete("logout", AuthController, :logout)
 
-    resources "/event", EventController, except: [:show, :new, :edit] do
+    resources "/event", EventController, except: [:new, :edit] do
       get("/topic", TopicController, :topic_by_event)
+      get("/my_event", EventController, :get_my_event)
+      resources "/topic", TopicController, only: [:create]
     end
 
     resources "/topic", TopicController, except: [:new, :edit] do
       get("/question", QuestionController, :question_by_topic)
       get("/get_my_topic", TopicController, :get_my_topic)
+      post("/active", TopicController, :active)
+      post("/deactive", TopicController, :deactive)
 
       resources "/question", QuestionController do
         post("/question_vote", QuestionVoteController, :create)

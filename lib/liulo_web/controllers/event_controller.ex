@@ -3,6 +3,7 @@ defmodule LiuloWeb.EventController do
 
   alias Liulo.Events
   alias Liulo.Events.Event
+  alias Liulo.Repo
 
   action_fallback(LiuloWeb.FallbackController)
 
@@ -41,6 +42,15 @@ defmodule LiuloWeb.EventController do
 
     with {:ok, %Event{}} <- Events.delete_event(event) do
       send_resp(conn, :no_content, "")
+    end
+  end
+
+  def get_my_event(conn, %{"event_id" => id}) do
+    user = Liulo.Guardian.Plug.current_resource(conn)
+
+    with %Event{} = event <- Repo.get_by(Event, code: id, owner_id: user.id),
+         event <- event |> Repo.preload([topics: :owner]) do
+      render(conn, "show.json", event: event)
     end
   end
 end
