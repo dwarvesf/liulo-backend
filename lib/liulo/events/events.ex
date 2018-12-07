@@ -128,7 +128,8 @@ defmodule Liulo.Events do
   """
   def get_topic!(id), do: Repo.get!(Topic, id)
 
-  def get_topic_by_code!(id, nil) do
+  def get_topic_by_code!(code, nil) do
+    code = String.upcase(id)
     query =
       from(t in Topic,
         left_join: q in assoc(t, :questions),
@@ -136,7 +137,7 @@ defmodule Liulo.Events do
         left_join: o in assoc(q, :owner),
         left_join: qv in assoc(q, :question_votes),
         left_join: u in assoc(qv, :user),
-        where: t.code == ^id and t.status == ^"active",
+        where: t.code == ^code and t.status == ^"active",
         order_by: [desc: q.vote_count],
         preload: [questions: {q, owner: o, question_votes: qv}]
       )
