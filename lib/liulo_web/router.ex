@@ -39,10 +39,13 @@ defmodule LiuloWeb.Router do
 
     resources "/topic", TopicController, except: [:new, :edit] do
       get("/question", QuestionController, :question_by_topic)
+      get("/get_my_topic", TopicController, :get_my_topic)
 
       resources "/question", QuestionController do
         post("/question_vote", QuestionVoteController, :create)
         post("/question_unvote", QuestionController, :unvote)
+        post("/mark_answered", QuestionController, :mark_answered)
+        post("/unmark_answered", QuestionController, :unmark_answered)
       end
     end
   end

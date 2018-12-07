@@ -54,4 +54,13 @@ defmodule LiuloWeb.TopicController do
       send_resp(conn, :no_content, "")
     end
   end
+
+  def get_my_topic(conn, %{"topic_id" => id}) do
+    user = Liulo.Guardian.Plug.current_resource(conn)
+
+    with %Topic{} = topic <- Repo.get_by(Topic, code: id, owner_id: user.id),
+         topic <- topic |> Repo.preload([questions: :owner, questions: :question_votes]) do
+      render(conn, "show.json", topic: topic)
+    end
+  end
 end

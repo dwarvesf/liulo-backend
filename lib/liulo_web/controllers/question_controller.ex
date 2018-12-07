@@ -71,4 +71,21 @@ defmodule LiuloWeb.QuestionController do
       send_resp(conn, :no_content, "")
     end
   end
+
+  def mark_answered(conn, %{"question_id" => id}) do
+    owner = Liulo.Guardian.Plug.current_resource(conn)
+    question = Events.get_question_with_topic_owner!(id, owner)
+
+    with {:ok, _} <- Events.update_question(question, %{status: :answered}) do
+      send_resp(conn, :no_content, "")
+    end
+  end
+  def unmark_answered(conn, %{"question_id" => id}) do
+    owner = Liulo.Guardian.Plug.current_resource(conn)
+    question = Events.get_question_with_topic_owner!(id, owner)
+
+    with {:ok, _} <- Events.update_question(question, %{status: :active}) do
+      send_resp(conn, :no_content, "")
+    end
+  end
 end

@@ -79,6 +79,4 @@ config :liulo, Liulo.Guardian,
   secret_key: "${SECRET_KEY}"
 
 config :cors_plug,
-  origin: ~r/https?.*liulo.netlify\.com$/,
-  max_age: 86400,
-  methods: ["GET", "POST"]
+  origin: ~r/https?.*liulo.netlify\.com$/
