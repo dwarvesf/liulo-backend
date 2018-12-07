@@ -299,6 +299,7 @@ defmodule Liulo.Events do
         join: t in assoc(q, :topic),
         where: q.id == ^id and t.owner_id == ^topic_owner.id
       )
+
     Repo.one!(query)
   end
 

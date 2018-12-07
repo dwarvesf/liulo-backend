@@ -72,7 +72,7 @@ defmodule LiuloWeb.TopicController do
     user = Liulo.Guardian.Plug.current_resource(conn)
 
     with %Topic{} = topic <- Repo.get_by(Topic, code: id, owner_id: user.id),
-         topic <- topic |> Repo.preload([questions: :owner, questions: :question_votes]) do
+         topic <- topic |> Repo.preload(questions: :owner, questions: :question_votes) do
       render(conn, "show.json", topic: topic)
     end
   end
@@ -80,6 +80,7 @@ defmodule LiuloWeb.TopicController do
   def active(conn, %{"topic_id" => id}) do
     user = Liulo.Guardian.Plug.current_resource(conn)
     topic = Events.get_topic_by_event_owner!(id, user)
+
     with {:ok, _} <- Events.update_topic(topic, %{status: :active}) do
       send_resp(conn, :no_content, "")
     end
@@ -88,6 +89,7 @@ defmodule LiuloWeb.TopicController do
   def deactive(conn, %{"topic_id" => id}) do
     user = Liulo.Guardian.Plug.current_resource(conn)
     topic = Events.get_topic_by_event_owner!(id, user)
+
     with {:ok, _} <- Events.update_topic(topic, %{status: :inactive}) do
       send_resp(conn, :no_content, "")
     end

@@ -36,7 +36,7 @@ defmodule LiuloWeb.Router do
     resources "/event", EventController, except: [:new, :edit] do
       get("/topic", TopicController, :topic_by_event)
       get("/my_event", EventController, :get_my_event)
-      resources "/topic", TopicController, only: [:create]
+      resources("/topic", TopicController, only: [:create])
     end
 
     resources "/topic", TopicController, except: [:new, :edit] do

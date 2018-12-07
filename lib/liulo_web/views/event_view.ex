@@ -24,7 +24,7 @@ defmodule LiuloWeb.EventView do
   end
 
   def render_topics(topics) do
-    if (Ecto.assoc_loaded?(topics)) do
+    if Ecto.assoc_loaded?(topics) do
       render_many(topics, LiuloWeb.TopicView, "topic.json")
     else
       []

@@ -18,10 +18,9 @@ defmodule LiuloWeb.QuestionView do
       status: question.status,
       is_anonymous: question.is_anonymous,
       owner_id: question.owner_id,
-      owner: render_one(question.owner, LiuloWeb.UserView, "user.json"),
+      owner: render_owner(question.owner),
       inserted_at: question.inserted_at,
-      question_votes:
-        render_many(question.question_votes, LiuloWeb.QuestionVoteView, "question_vote.json")
+      question_votes: render_question_votes(question.question_votes)
     }
   end
 
@@ -41,5 +40,21 @@ defmodule LiuloWeb.QuestionView do
         is_voted: is_vote
       }
     end)
+  end
+
+  defp render_question_votes(votes) do
+    if Ecto.assoc_loaded?(votes) do
+      render_many(votes, LiuloWeb.QuestionVoteView, "question_vote.json")
+    else
+      []
+    end
+  end
+
+  defp render_owner(owner) do
+    if Ecto.assoc_loaded?(owner) do
+      render_one(owner, LiuloWeb.UserView, "user.json")
+    else
+      nil
+    end
   end
 end

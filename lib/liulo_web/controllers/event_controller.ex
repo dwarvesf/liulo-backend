@@ -49,7 +49,7 @@ defmodule LiuloWeb.EventController do
     user = Liulo.Guardian.Plug.current_resource(conn)
 
     with %Event{} = event <- Repo.get_by(Event, code: id, owner_id: user.id),
-         event <- event |> Repo.preload([topics: :owner]) do
+         event <- event |> Repo.preload(topics: [:owner, :questions]) do
       render(conn, "show.json", event: event)
     end
   end

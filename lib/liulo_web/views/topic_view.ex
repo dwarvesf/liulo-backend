@@ -39,7 +39,7 @@ defmodule LiuloWeb.TopicView do
   end
 
   def render_questions(questions) do
-    if (Ecto.assoc_loaded?(questions)) do
+    if Ecto.assoc_loaded?(questions) do
       render_many(questions, LiuloWeb.QuestionView, "question.json")
     else
       []
@@ -47,7 +47,7 @@ defmodule LiuloWeb.TopicView do
   end
 
   def render_owner(owner) do
-    if (Ecto.assoc_loaded?(owner)) do
+    if Ecto.assoc_loaded?(owner) do
       render_one(owner, LiuloWeb.UserView, "user.json")
     else
       nil
