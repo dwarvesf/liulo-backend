@@ -129,7 +129,8 @@ defmodule Liulo.Events do
   def get_topic!(id), do: Repo.get!(Topic, id)
 
   def get_topic_by_code!(code, nil) do
-    code = String.upcase(id)
+    code = String.upcase(code)
+
     query =
       from(t in Topic,
         left_join: q in assoc(t, :questions),
