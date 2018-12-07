@@ -42,6 +42,11 @@ defmodule LiuloWeb.TopicController do
     user = Liulo.Guardian.Plug.current_resource(conn)
 
     with {:ok, %Topic{} = topic} <- Events.update_topic(topic, topic_params) do
+      Liulo.Notifications.notify_when_update_topic(
+        id,
+        Map.put(topic_params, "id", topic.id)
+      )
+
       topic = Events.get_topic_by_code!(topic.code, user)
       render(conn, "show.json", topic: topic)
     end
@@ -59,7 +64,7 @@ defmodule LiuloWeb.TopicController do
     user = Liulo.Guardian.Plug.current_resource(conn)
 
     with %Topic{} = topic <- Repo.get_by(Topic, code: id, owner_id: user.id),
-         topic <- topic |> Repo.preload([questions: :owner, questions: :question_votes]) do
+         topic <- topic |> Repo.preload(questions: :owner, questions: :question_votes) do
       render(conn, "show.json", topic: topic)
     end
   end
