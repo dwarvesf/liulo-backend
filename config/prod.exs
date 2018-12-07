@@ -79,4 +79,4 @@ config :liulo, Liulo.Guardian,
   secret_key: "${SECRET_KEY}"
 
 config :cors_plug,
-  origin: [~r/https?.*liulo.netlify\.com$/, 'https://ask.gophercon.vn']
+  origin: ~r/https?.*ask.gophercon\.vn$/
