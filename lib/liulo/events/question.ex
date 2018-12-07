@@ -10,7 +10,7 @@ defmodule Liulo.Events.Question do
     belongs_to(:owner, Liulo.Accounts.User)
     belongs_to(:topic, Liulo.Events.Topic)
 
-    has_many(:question_votes, Liulo.Events.QuestionVote)
+    has_many(:question_votes, Liulo.Events.QuestionVote, on_delete: :delete_all)
     timestamps()
   end
 

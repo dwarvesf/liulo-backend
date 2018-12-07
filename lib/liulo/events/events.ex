@@ -283,6 +283,15 @@ defmodule Liulo.Events do
     Repo.one!(query)
   end
 
+  def get_question_with_topic_owner!(id, topic_owner) do
+    query =
+      from(q in Question,
+        join: t in assoc(q, :topic),
+        where: q.id == ^id and t.owner_id == ^topic_owner.id
+      )
+    Repo.one!(query)
+  end
+
   @doc """
   Creates a question.
 

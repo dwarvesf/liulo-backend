@@ -61,6 +61,4 @@ config :liulo, Liulo.Guardian,
   secret_key: "QvFQ5rk+wwLUhzdIFvvt8Bap+WsACHtnn2W1yUcx0LIcznf00evBn4MIQWS3JLVm"
 
 config :cors_plug,
-  origin: "*",
-  max_age: 86400,
-  methods: ["GET", "POST"]
+  origin: "*"
