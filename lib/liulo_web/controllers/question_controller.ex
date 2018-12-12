@@ -34,6 +34,11 @@ defmodule LiuloWeb.QuestionController do
     with %Topic{} = topic <- Liulo.Repo.get_by!(Topic, id: topic_id),
          %User{} = owner <- Liulo.Guardian.Plug.current_resource(conn),
          {:ok, %Question{} = question} <- Events.create_question(owner, topic, question_params) do
+      Liulo.Notifications.notify_when_new_question(
+        topic_id,
+        Map.put(question_params, "id", question.id)
+      )
+
       question = Events.get_question!(question.id, owner)
 
       conn
@@ -47,10 +52,15 @@ defmodule LiuloWeb.QuestionController do
     render(conn, "show.json", question: question)
   end
 
-  def update(conn, %{"id" => id, "question" => question_params}) do
+  def update(conn, %{"topic_id" => topic_id, "id" => id, "question" => question_params}) do
     question = Events.get_question!(id)
 
     with {:ok, %Question{} = question} <- Events.update_question(question, question_params) do
+      Liulo.Notifications.notify_when_new_question(
+        topic_id,
+        Map.put(question_params, "id", question.id)
+      )
+
       render(conn, "show.json", question: question)
     end
   end
@@ -63,11 +73,12 @@ defmodule LiuloWeb.QuestionController do
     end
   end
 
-  def unvote(conn, %{"question_id" => id}) do
+  def unvote(conn, %{"topic_id" => topic_id, "question_id" => id}) do
     owner_id = Liulo.Guardian.Plug.current_resource(conn).id
     question = Events.get_question!(id)
 
     with {:ok, _} <- Events.delete_question_vote(question, owner_id) do
+      Liulo.Notifications.notify_when_downvote_question(topic_id, %{question_id: id})
       send_resp(conn, :no_content, "")
     end
   end

@@ -2,7 +2,7 @@ defmodule LiuloWeb.UserSocket do
   use Phoenix.Socket
 
   ## Channels
-  # channel "room:*", LiuloWeb.RoomChannel
+  channel("topic:*", LiuloWeb.TopicChannel)
 
   ## Transports
   transport(:websocket, Phoenix.Transports.WebSocket)

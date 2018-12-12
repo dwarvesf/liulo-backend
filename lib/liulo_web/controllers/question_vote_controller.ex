@@ -9,7 +9,7 @@ defmodule LiuloWeb.QuestionVoteController do
 
   action_fallback(LiuloWeb.FallbackController)
 
-  def create(conn, %{"question_id" => question_id}) do
+  def create(conn, %{"topic_id" => topic_id, "question_id" => question_id}) do
     upvote_user = Liulo.Guardian.Plug.current_resource(conn)
     question = Events.get_question!(question_id)
     existed = Repo.get_by(QuestionVote, user_id: upvote_user.id, question_id: question.id) != nil
@@ -17,6 +17,12 @@ defmodule LiuloWeb.QuestionVoteController do
     if existed == false do
       with {:ok, %{question_vote: question_vote}} <-
              Events.create_question_vote(question, upvote_user) do
+        Liulo.Notifications.notify_when_upvote_question(topic_id, %{
+          question_id: question_id,
+          user_id: upvote_user.id,
+          full_name: upvote_user.full_name
+        })
+
         render(conn, "show.json", question_vote: question_vote)
       end
     else
